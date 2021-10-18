@@ -150,7 +150,7 @@ public class Robot {
     private int oldLeftPosition = 0;
     private int oldLateralPosition = 0;
 
-    public Pose2D START_POSITION = new Pose2D(0, 0, Math.toRadians(90));  // Default
+    public Pose2D START_POSITION = new Pose2D(0, 0, AngleUtil.interpretAngle(90));  // Default
 
     public void setSTART_POSITION(Pose2D START) {
         START_POSITION = START;

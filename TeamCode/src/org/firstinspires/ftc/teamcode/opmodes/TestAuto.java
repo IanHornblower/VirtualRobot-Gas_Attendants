@@ -20,7 +20,7 @@ public class TestAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
 
-        robot.setSTART_POSITION(new Pose2D(0, 0, Math.toRadians(90)));
+        robot.setSTART_POSITION(new Pose2D(0, 0, AngleUtil.interpretAngle(90)));
 
         waitForStart();
 
@@ -33,17 +33,16 @@ public class TestAuto extends LinearOpMode {
             motionProfile.runToPosition(20, 20, Math.toRadians(90));
 
 
-            //telemetry.addData("XYH",
-            //        roundPlaces(robot.pos.x, 1) +
-            //                " " + roundPlaces(robot.pos.y, 1) +
-            //                " " + roundPlaces(robot.pos.getHeadingInDegrees(), 1)
-            //);
+            telemetry.addData("XYH",
+                    roundPlaces(robot.pos.x, 1) +
+                            " " + roundPlaces(robot.pos.y, 1) +
+                            " " + roundPlaces(robot.pos.getHeadingInDegrees(), 1)
+            );
 
             telemetry.addData("Direction", motionProfile.direction);
             telemetry.addData("PID Output", motionProfile.pidOutput);
             telemetry.addData("Output", motionProfile.output);
             telemetry.addData("Angle", Math.toDegrees(robot.pos.getHeading()));
-            telemetry.addData("DeNormalized Angle", Math.toDegrees(AngleUtil.deNormalizeAngle(robot.pos.getHeading())));
 
             telemetry.update();
 

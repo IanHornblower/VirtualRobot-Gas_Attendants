@@ -19,7 +19,7 @@ public class TestOpMode extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
 
-        robot.setSTART_POSITION(new Pose2D(0, 0, Math.toRadians(90)));
+        robot.setSTART_POSITION(new Pose2D(0, 0, AngleUtil.interpretAngle(90)));
 
         waitForStart();
 
@@ -38,18 +38,6 @@ public class TestOpMode extends LinearOpMode {
                     " " + roundPlaces(robot.pos.y, 1) +
                     " " + roundPlaces(robot.pos.getHeadingInDegrees(), 1)
             );
-
-            telemetry.addData("LRX",
-                    roundPlaces(robot.getLeftEncoder().getCurrentPosition(), 1) +
-                     " " + roundPlaces(robot.getRightEncoder().getCurrentPosition(), 1) +
-                     " " + roundPlaces(robot.getFrontEncoder().getCurrentPosition(), 1)
-            );
-
-            /**
-
-            telemetry.addData("CylcleTime", robot.dt/1e+6);
-
-             */
 
             telemetry.update();
 

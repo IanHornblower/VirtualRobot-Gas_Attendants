@@ -113,6 +113,10 @@ public class AngleUtil {
         }
     }
 
+    public static double interpretAngle(double degrees) {
+        return Math.toRadians(180 - degrees);
+    }
+
     /**
      *
      * @param d Small
