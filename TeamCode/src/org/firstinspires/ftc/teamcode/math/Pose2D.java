@@ -1,0 +1,54 @@
+package org.firstinspires.ftc.teamcode.math;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.util.AngleUtil;
+
+public class Pose2D {
+
+    public double x, y, heading;
+    public double xVelocity, yVelocity, headingVelocity;
+
+    public Pose2D (double x, double y, double heading) {
+        this.x = x;
+        this.y = y;
+        this.heading = heading;
+    }
+
+    public void invertPose() {
+        double tempX = x, tempY = y;
+        x = tempY;
+        y = tempX;
+    }
+
+    public void scalePose(double scaleFactor) {
+        x *= scaleFactor;
+        y *= scaleFactor;
+    }
+
+    public double getHeading() {
+        return AngleUtil.normalize(AngleUtil.fixTheta(heading));
+    }
+
+    public double getHeadingInDegrees() {
+        return Math.toDegrees(getHeading());
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public Point toPoint() {
+        return new Point(x, y);
+    }
+
+    public static double getDistance(Pose2D start, Pose2D end) {
+        return Math.sqrt(Math.pow((end.getX()-start.getX()),2)+Math.pow((end.getY()-start.getY()),2));
+    }
+    public static double getDistance(Pose2D start, Point end) {
+        return Math.sqrt(Math.pow((end.getX()-start.getX()),2)+Math.pow((end.getY()-start.getY()),2));
+    }
+}
