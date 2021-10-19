@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.control;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import org.firstinspires.ftc.teamcode.hardware.DriveTrain;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.math.Curve;
 import org.firstinspires.ftc.teamcode.math.Point;
@@ -14,7 +15,7 @@ public class CornettCore extends OpMode {
 
     private double zero = 1e-9;
 
-    private double x, y;
+    private double x, y, allowableDistanceError;
 
     public double output = 0, direction = 0, pidOutput = 0;
 
@@ -24,7 +25,7 @@ public class CornettCore extends OpMode {
 
     // TODO: Set up Trajectory, simple path following (circle around target), Later Implement Pure Pursuit (Circle Around Robot)
 
-    public void rotate(double heading, double anglePrecision) {   // Note this is currently Async and does not wait for other functions to be called
+    public void rotateRaw(double heading, double anglePrecision) {   // Note this is currently Async and does not wait for other functions to be called
         MiniPID turnPID = new MiniPID(2, 0, 0);          // This will be cancelled and run the later iteration of this function without wait
                                                                  //  Angle Precision/Tolerance Has yet to be setup | PID has to be defined somewhere else, DT maybe?
         turnPID.setSetpoint(heading);
@@ -39,7 +40,11 @@ public class CornettCore extends OpMode {
         robot.DriveTrain.setMotorPowers(0, 0, output);
     }
 
-    public void runToPosition(double x, double y, double heading) {
+    public void rotate(double heading) {
+        rotateRaw(heading,0);
+    }
+
+    public void runToPositionRaw(double x, double y, double heading, double allowableDistanceError) {
         MiniPID xPID = new MiniPID(1, 0, 0);
         MiniPID yPID = new MiniPID(1, 0, 0);
         MiniPID headingPID = new MiniPID(2, 0, 0);
@@ -72,6 +77,19 @@ public class CornettCore extends OpMode {
         double headingControlPoint = direction * headingPIDOutput;
 
         robot.DriveTrain.driveFieldCentric(xControlPoint, yControlPoint, headingControlPoint);
+    }
+
+    public void runToPosition(double x, double y, double heading) {
+        runToPositionRaw(x, y, heading, 0);
+    }
+
+    public void runToPositionSync(double x, double y, double heading, double allowableDistanceError) {
+        double dist = robot.pos.getDistanceFrom(new Point(x, y));
+        while(dist > allowableDistanceError) {
+            dist = robot.pos.getDistanceFrom(new Point(x, y));
+            runToPosition(x, y, heading);
+        }
+        robot.DriveTrain.stopDrive();
     }
 
     public boolean isWithinRange(double range) {

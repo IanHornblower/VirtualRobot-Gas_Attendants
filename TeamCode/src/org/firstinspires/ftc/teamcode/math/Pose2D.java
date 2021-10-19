@@ -54,9 +54,14 @@ public class Pose2D {
                 " " + roundPlaces(getHeadingInDegrees(), 1));
     }
 
-    public static double getDistance(Pose2D start, Pose2D end) {
-        return Math.sqrt(Math.pow((end.getX()-start.getX()),2)+Math.pow((end.getY()-start.getY()),2));
+    public double getDistanceFrom(Point point) {
+        return getDistance(this, point);
     }
+
+    public double getDistanceFrom(Pose2D pose) {
+        return getDistance(this, pose.toPoint());
+    }
+
     public static double getDistance(Pose2D start, Point end) {
         return Math.sqrt(Math.pow((end.getX()-start.getX()),2)+Math.pow((end.getY()-start.getY()),2));
     }
