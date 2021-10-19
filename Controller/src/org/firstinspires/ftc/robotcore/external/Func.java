@@ -34,7 +34,7 @@ package org.firstinspires.ftc.robotcore.external;
 
 /**
  * Instances of {@link Func} are nullary producers of values.
- * TODO: uses of this should probably be replaced with uses of { Supplier}.
+ * to do: uses of this should probably be replaced with uses of { Supplier}.
  */
 public interface Func<T>
 {

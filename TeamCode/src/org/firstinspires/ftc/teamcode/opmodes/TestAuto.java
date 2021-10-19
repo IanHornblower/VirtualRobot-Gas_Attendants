@@ -32,14 +32,9 @@ public class TestAuto extends LinearOpMode {
 
             CornettCore motionProfile = new CornettCore(robot);
 
-            motionProfile.runToPosition(20, 20, Math.toRadians(0));
-
-
-            telemetry.addData("XYH",
-                    roundPlaces(robot.pos.x, 1) +
-                            " " + roundPlaces(robot.pos.y, 1) +
-                            " " + roundPlaces(robot.pos.getHeadingInDegrees(), 1)
-            );
+            motionProfile.runToPosition(24, 24, Math.toRadians(0));
+            
+            telemetry.addData("XYH", robot.pos.toString());
 
             telemetry.addData("Direction", motionProfile.direction);
             telemetry.addData("PID Output", motionProfile.pidOutput);

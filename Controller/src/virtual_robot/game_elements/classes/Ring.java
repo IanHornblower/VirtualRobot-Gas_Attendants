@@ -62,7 +62,7 @@ public class Ring extends VirtualGameElement {
     private RingStatus status = RingStatus.OFF_FIELD;
     private RingStatus nextStatus = RingStatus.OFF_FIELD;
 
-    private double RING_BOUNDARY;   // TODO: make this final and static (and figure out how to initialize)
+    private double RING_BOUNDARY;   // to do: make this final and static (and figure out how to initialize)
 
     /*
      * Physics body and BodyFixture for the ring. ringBody will just be an alias of elementBody from

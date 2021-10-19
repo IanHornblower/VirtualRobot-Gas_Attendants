@@ -34,17 +34,9 @@ public class TestOpMode extends LinearOpMode {
 
             robot.DriveTrain.driveFieldCentric(leftX, leftY, turn);
 
-            telemetry.addData("XYH",
-                    roundPlaces(robot.pos.x, 1) +
-                    " " + roundPlaces(robot.pos.y, 1) +
-                    " " + roundPlaces(robot.pos.getHeadingInDegrees(), 1)
-            );
+            telemetry.addData("In Range", Point.inRange(robot.pos.toPoint(), new Point(20, 20), 5));
 
-            telemetry.addData("XYT",
-                    roundPlaces(leftX, 1) +
-                     " " + roundPlaces(leftY, 1) +
-                     " " + roundPlaces(turn, 1)
-            );
+            telemetry.addData("XYH", robot.pos.toString());
 
             telemetry.update();
 

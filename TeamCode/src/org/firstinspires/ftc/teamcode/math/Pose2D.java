@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.math;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.util.AngleUtil;
 
+import static org.firstinspires.ftc.teamcode.util.MathUtil.roundPlaces;
+
 public class Pose2D {
 
     public double x, y, heading;
@@ -43,6 +45,13 @@ public class Pose2D {
 
     public Point toPoint() {
         return new Point(x, y);
+    }
+
+    public String toString() {
+        return String.format(
+                roundPlaces(x, 1) +
+                " " + roundPlaces(y, 1) +
+                " " + roundPlaces(getHeadingInDegrees(), 1));
     }
 
     public static double getDistance(Pose2D start, Pose2D end) {

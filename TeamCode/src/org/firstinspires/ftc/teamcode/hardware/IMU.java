@@ -28,6 +28,8 @@ public class IMU {
         imu.initialize(IMUParameters);
     }
 
+    // Remove Comments when using in IRL SDK
+
     /**
     public boolean getisGyroCalibrated(){
         return imu.isGyroCalibrated();

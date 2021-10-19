@@ -28,6 +28,20 @@ public class Robot {
     public DriveTrain DriveTrain;
     public IMU IMU;
 
+    // Robot Kinematics
+
+    // Odmometric Constraints
+    final static double L = 12;  // separation between left and right Encoder.
+    final static double lateralOffset = -6.0;  // offset between origin of robot and lateral Encoder.
+    final static double R = 1.0;  // Encoder wheel radius.
+    final static double encoderTicksPerRev = 1120;  // Ticks read per revolution of REV Encoder.
+    final static double inchPerTick = 2.0 * Math.PI * R / encoderTicksPerRev;  // Inches traveled per tick moved.
+
+
+    // Velocity
+
+    int cycleToSkip = 20;
+
     public Robot(HardwareMap hardwareMap) {
         hwMap = hardwareMap;
 
@@ -69,7 +83,6 @@ public class Robot {
         stopDrive();
         resetDriveEncoders();
 
-        /*
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
@@ -79,10 +92,9 @@ public class Robot {
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-        */
 
         DriveTrain = new DriveTrain(this);
-        //IMU = new IMU(imu);
+        IMU = new IMU(imu);
 
     }
 
@@ -134,13 +146,6 @@ public class Robot {
         lateralEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    // known constants
-    final static double L = 12;  // separation between left and right Encoder.
-    final static double lateralOffset = -6.0;  // offset between origin of robot and lateral Encoder.
-    final static double R = 1.0;  // Encoder wheel radius.
-    final static double encoderTicksPerRev = 1120;  // Ticks read per revolution of REV Encoder.
-    final static double inchPerTick = 2.0 * Math.PI * R / encoderTicksPerRev;  // Inches traveled per tick moved.
-
     // update variables
     public int currentRightPosition = 0;
     public int currentLeftPosition = 0;
@@ -189,8 +194,6 @@ public class Robot {
         oldLateralPosition = currentLateralPosition;
     }
 
-    int cycleToSkip = 20;
-
     double oldX = 0;
     double oldY = 0;
     double oldH = 0;
@@ -204,12 +207,11 @@ public class Robot {
     public double dx = 0;
     public double dy = 0;
     public double dt = 0;
+    public double dTheta = 0;
     int i = 0;
 
-    /**
-
     public void updateVelocity() { // make update() --> odometry() if need be [Merge With UpdateOdometry()]
-        i++; if(i % 20 == 0) {
+        i++; if(i % cycleToSkip == 0) {
                 oldX = currentX;
                 oldY = currentY;
                 oldH = currentH;
@@ -231,7 +233,6 @@ public class Robot {
         }
     }
 
-     */
 
     public void stopDrive() {
         frontLeft.setPower(0);

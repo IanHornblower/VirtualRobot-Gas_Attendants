@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.util;
 
 public class AngleUtil {
 
-    public static double fourPI = 4*Math.PI;
-
     /** if the length degrees is larger than 180 subtract it
      *  from 360 to get the shortest length from degrees to 0
      * @param degrees
