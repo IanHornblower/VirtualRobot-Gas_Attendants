@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.control.CornettCore;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.math.Curve;
+import org.firstinspires.ftc.teamcode.math.Point;
 import org.firstinspires.ftc.teamcode.math.Pose2D;
 import org.firstinspires.ftc.teamcode.util.AngleUtil;
 import org.firstinspires.ftc.teamcode.util.Controller;
@@ -30,7 +32,7 @@ public class TestAuto extends LinearOpMode {
 
             CornettCore motionProfile = new CornettCore(robot);
 
-            motionProfile.runToPosition(20, 20, Math.toRadians(90));
+            motionProfile.runToPosition(20, 20, Math.toRadians(0));
 
 
             telemetry.addData("XYH",
@@ -43,6 +45,7 @@ public class TestAuto extends LinearOpMode {
             telemetry.addData("PID Output", motionProfile.pidOutput);
             telemetry.addData("Output", motionProfile.output);
             telemetry.addData("Angle", Math.toDegrees(robot.pos.getHeading()));
+            telemetry.addData("Angle To", Math.toDegrees(Curve.getAngle(robot.pos, new Point(20, 20))));
 
             telemetry.update();
 

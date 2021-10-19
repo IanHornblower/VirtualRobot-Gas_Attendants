@@ -37,7 +37,5 @@ public class Curve {
         else {
             return -1;
         }
-
     }
-
 }

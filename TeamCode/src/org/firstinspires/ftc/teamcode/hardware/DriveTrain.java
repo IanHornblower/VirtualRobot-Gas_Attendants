@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import org.firstinspires.ftc.teamcode.math.Point;
 import org.firstinspires.ftc.teamcode.util.MiniPID;
 
 
@@ -42,7 +43,30 @@ public class DriveTrain {
         setMotorPowers(controlPointX, controlPointY, controlPointTurn);
     }
 
+    public void driveFieldCentric(double x, double y, double turn) {
+        Point vector = new Point(-y, x);
+
+        calculatePosition(
+                vector.hypot(),
+                vector.atan2() - robot.pos.getHeading(),
+                turn);
+    }
+
+    public void calculatePosition(double dr, double theta, double turn) {
+        double sin = Math.sin(theta);
+        double cos = Math.cos(theta);
+
+        double mx = cos*dr;
+        double my = sin*dr;
+        double mt = turn;
+
+        setMotorPowers(mx, my, mt);
+    }
+
     public void setMotorPowers(double x, double y, double turn) {
+        x *= -1;  // Invert
+        y *= -1; // Invert
+
         double h = Math.hypot(x, y);
         double theta = Math.atan2(y, x) - Math.toRadians(45);
 

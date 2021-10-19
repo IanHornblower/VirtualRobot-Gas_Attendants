@@ -28,6 +28,14 @@ public class Point {
         return x;
     }
 
+    public double hypot() {
+        return Math.hypot(x, y);
+    }
+
+    public double atan2() {
+        return Math.atan2(y, x);
+    }
+
     public static double getDistance(Point start, Point end) {
         return Math.sqrt(Math.pow((end.getX()-start.getX()),2)+Math.pow((end.getY()-start.getY()),2));
     }
