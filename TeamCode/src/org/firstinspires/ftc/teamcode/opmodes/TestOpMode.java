@@ -30,7 +30,7 @@ public class TestOpMode extends LinearOpMode {
 
             double leftX = AngleUtil.powRetainingSign(Controller.deadZone(gamepad1.left_stick_x, 0.1), LEFT_TRIGGER_X_POW);
             double leftY = AngleUtil.powRetainingSign(Controller.deadZone(-gamepad1.left_stick_y, 0.1), LEFT_TRIGGER_Y_POW);
-            double turn = Controller.deadZone(gamepad1.right_stick_x, 0.05);
+            double turn = Controller.deadZone(gamepad1.right_stick_x, 0.1);
 
             robot.DriveTrain.driveFieldCentric(leftX, leftY, turn);
 

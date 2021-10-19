@@ -80,14 +80,14 @@ public class CornettCore extends OpMode {
     }
 
     public void runToPosition(double x, double y, double heading) {
-        runToPositionRaw(x, y, heading, 0);
+        runToPositionRaw(x, y, heading, 1);
     }
 
     public void runToPositionSync(double x, double y, double heading, double allowableDistanceError) {
+        robot.updateOdometry();
         double dist = robot.pos.getDistanceFrom(new Point(x, y));
+        runToPosition(x, y, heading);
         while(dist > allowableDistanceError) {
-            dist = robot.pos.getDistanceFrom(new Point(x, y));
-            runToPosition(x, y, heading);
         }
         robot.DriveTrain.stopDrive();
     }
