@@ -40,13 +40,13 @@ public class IMU {
     }
     */
 
-    public double getIMUHeading() {
+    public double getRawIMUHeadingInDegrees() {
         double currentHeading;
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         currentHeading = -angles.firstAngle;
         return currentHeading;
     }
-    public double getRawIMUHeading() {
+    public double getIMUHeadingInDegrees() {
         double currentHeading;
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         currentHeading = -angles.firstAngle;
@@ -55,7 +55,15 @@ public class IMU {
         } else {
             currentHeading = 360 - currentHeading;
         }
-        return Math.abs(currentHeading-360);
+        return Math.abs(currentHeading);
+    }
+
+    public double getIMUHeading() {
+        return Math.toRadians(getIMUHeadingInDegrees());
+    }
+
+    public double getRawIMUHeading() {
+        return Math.toRadians(getRawIMUHeadingInDegrees());
     }
 
     public double[] printAngles(){

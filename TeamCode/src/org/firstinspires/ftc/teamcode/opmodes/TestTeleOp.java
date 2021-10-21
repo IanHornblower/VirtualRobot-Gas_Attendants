@@ -34,10 +34,8 @@ public class TestTeleOp extends LinearOpMode {
 
             robot.DriveTrain.driveFieldCentric(leftX, leftY, turn);
 
-            telemetry.addData("XYH", robot.pos.toString());
-
+            telemetry.addData("IMY", robot.IMU.getRawIMUHeadingInDegrees());
             telemetry.update();
-
         }
     }
 }

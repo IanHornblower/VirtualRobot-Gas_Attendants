@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -13,10 +14,11 @@ import org.firstinspires.ftc.teamcode.math.Angle;
 import org.firstinspires.ftc.teamcode.math.Pose2D;
 import org.firstinspires.ftc.teamcode.util.AngleUtil;
 
+import java.awt.event.ItemListener;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
-public class Robot {
+public class Robot extends OpMode {
     private DcMotor backLeft, backRight, frontLeft, frontRight;
 
     private DcMotorEx leftEncoder, rightEncoder, lateralEncoder;
@@ -192,6 +194,9 @@ public class Robot {
         oldRightPosition = currentRightPosition;
         oldLeftPosition = currentLeftPosition;
         oldLateralPosition = currentLateralPosition;
+
+        telemetry.addData("XYH", pos.toString());
+        //telemetry.update();
     }
 
     double oldX = 0;
@@ -233,7 +238,6 @@ public class Robot {
         }
     }
 
-
     public void stopDrive() {
         frontLeft.setPower(0);
         frontRight.setPower(0);
@@ -241,4 +245,13 @@ public class Robot {
         backRight.setPower(0);
     }
 
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    public void loop() {
+
+    }
 }

@@ -18,13 +18,17 @@ public class CornettCore extends OpMode {
 
     private Robot robot;
 
+    MiniPID defaultTurnPID = new MiniPID(2, 0, 0);
+
+    double defaultTurnOutputMultiplier = 1;
+
     MiniPID defaultXPID = new MiniPID(1, 0,0);
     MiniPID defaultYPID = new MiniPID(1, 0,0);
     MiniPID defaultHeadingPID = new MiniPID(2, 0,0);
 
-    double defaultXControlPointMultiplier = 1;
-    double defaultYControlPointMultiplier = 1;
-    double defaultHeadingControlPointMultiplier = 1;
+    double defaultXControlPointMultiplier = 3;
+    double defaultYControlPointMultiplier = 3;
+    double defaultHeadingControlPointMultiplier = 1.5;
 
     private double zero = 1e-9;
     boolean init = false;
@@ -36,11 +40,27 @@ public class CornettCore extends OpMode {
         this.robot = robot;
     }
 
-    // TODO: Set up Trajectory, simple path following (circle around target), Later Implement Pure Pursuit (Circle Around Robot)
+    // TODO: Set up Trajectory Following, simple path following (circle around target), Later Implement Pure Pursuit (Circle Around Robot)
+    // TODO: When running Sync functions allow for heading to finish turning (Maybe not, not an issue right now)
 
-    public void rotateRaw(double heading, double anglePrecision) {   // Note this is currently Async and does not wait for other functions to be called
-        MiniPID turnPID = new MiniPID(2, 0, 0);          // This will be cancelled and run the later iteration of this function without wait
-                                                                 //  Angle Precision/Tolerance Has yet to be setup | PID has to be defined somewhere else, DT maybe?
+    public void rotateIMURaw(double heading, MiniPID turnPID, double outputMultiplier) {
+        turnPID.setSetpoint(heading);
+        turnPID.setOutputLimits(-1, 1);
+
+        turnPID.setError(Curve.getShortestDistance(robot.IMU.getIMUHeading(), heading));
+
+        direction = Curve.getDirection(robot.IMU.getIMUHeading(), heading);
+        pidOutput = turnPID.getOutput(AngleUtil.deNormalizeAngle(robot.IMU.getIMUHeading()));
+        output = direction * pidOutput * outputMultiplier;
+
+        robot.DriveTrain.setMotorPowers(0, 0, output);
+    }
+
+    public void rotateIMU(double heading) {
+        rotateIMURaw(heading, defaultTurnPID, defaultTurnOutputMultiplier);
+    }
+
+    public void rotateRaw(double heading, MiniPID turnPID, double outputMultiplier) {
         turnPID.setSetpoint(heading);
         turnPID.setOutputLimits(-1, 1);
 
@@ -48,23 +68,27 @@ public class CornettCore extends OpMode {
 
         direction = Curve.getDirection(robot.pos.getHeading(), heading);
         pidOutput = turnPID.getOutput(AngleUtil.deNormalizeAngle(robot.pos.getHeading()));
-        output = direction * pidOutput;
+        output = direction * pidOutput * outputMultiplier;
 
         robot.DriveTrain.setMotorPowers(0, 0, output);
     }
 
     public void rotate(double heading) {
-        rotateRaw(heading,1);
+        rotateRaw(heading, defaultTurnPID, defaultTurnOutputMultiplier);
     }
 
-    public void rotateSync(double heading, double anglePrecision) {
+    public void rotateSyncRaw(double heading, double anglePrecision, MiniPID turnPID, double turnOutputMultiplier) {
         distance = Curve.getShortestDistance(heading, anglePrecision);
 
         do {
             robot.updateOdometry();
             distance = Curve.getShortestDistance(robot.pos.getHeading(), heading);
-            rotate(heading);
+            rotateRaw(heading, turnPID, turnOutputMultiplier);
         } while(distance > anglePrecision);
+    }
+
+    public void rotateSync(double heading, double anglePrecision) {
+            rotateSyncRaw(heading, anglePrecision, defaultTurnPID, defaultTurnOutputMultiplier);
     }
 
     public void runToPositionRaw(double x, double y, double heading, MiniPID xPID,
@@ -123,15 +147,10 @@ public class CornettCore extends OpMode {
     }
 
     public synchronized void runToPositionSync(double x, double y, double heading, double allowableDistanceError) throws InterruptedException {
-        distance = robot.pos.getDistanceFrom(new Point(x, y));
-        do {
-            robot.updateOdometry();
-            distance = robot.pos.getDistanceFrom(new Point(x, y));
             runToPositionSyncRaw(
                     x, y, heading, allowableDistanceError,
                     defaultXPID, defaultYPID, defaultHeadingPID,
                     defaultXControlPointMultiplier, defaultYControlPointMultiplier, defaultHeadingControlPointMultiplier);
-        } while(distance > allowableDistanceError);
     }
 
 

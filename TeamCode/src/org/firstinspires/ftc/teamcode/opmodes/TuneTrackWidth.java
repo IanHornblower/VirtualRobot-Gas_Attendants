@@ -2,21 +2,13 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.control.CornettCore;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
-import org.firstinspires.ftc.teamcode.math.Curve;
-import org.firstinspires.ftc.teamcode.math.Point;
 import org.firstinspires.ftc.teamcode.math.Pose2D;
 import org.firstinspires.ftc.teamcode.util.AngleUtil;
-import org.firstinspires.ftc.teamcode.util.Controller;
-import static org.firstinspires.ftc.teamcode.util.Controller.*;
-import static org.firstinspires.ftc.teamcode.util.MathUtil.roundPlaces;
 
-import org.firstinspires.ftc.teamcode.util.MathUtil;
-
-@Autonomous(name = "Testing Auto", group = "Testing")
-public class TestAuto extends LinearOpMode {
+@Autonomous(name = "Calculate Track Width Error", group = "Tuning")
+public class TuneTrackWidth extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -32,8 +24,20 @@ public class TestAuto extends LinearOpMode {
 
             CornettCore motionProfile = new CornettCore(robot);
 
-            motionProfile.rotateSync(360, 1);
-            motionProfile.rotateSync(360, 1);
+            while(robot.IMU.getRawIMUHeadingInDegrees() < 3600) {
+                robot.DriveTrain.setMotorPowers(1, -1);
+            }
+            robot.DriveTrain.stopDrive();
+            
+            telemetry.addData("XYH", robot.pos.toString());
+
+            telemetry.addData("Direction", motionProfile.direction);
+            telemetry.addData("PID Output", motionProfile.pidOutput);
+            telemetry.addData("Output", motionProfile.output);
+            telemetry.addData("Angle", Math.toDegrees(robot.pos.getHeading()));
+
+            telemetry.update();
+
         }
     }
 }
