@@ -28,11 +28,13 @@ public class TestAuto extends LinearOpMode {
 
         while(opModeIsActive()) {
             robot.updateOdometry();
-            //robot.updateVelocity();
+            robot.updateVelocity();
 
             CornettCore motionProfile = new CornettCore(robot);
 
-            motionProfile.runToPositionSync(24, 24, Math.toRadians(90), 2);
+            motionProfile.runToPositionSync(20, 20, Math.toRadians(90), 0.2);
+
+            motionProfile.runToPositionSync(-20, 20, Math.toRadians(0), 0.2);
             
             telemetry.addData("XYH", robot.pos.toString());
 
@@ -40,7 +42,7 @@ public class TestAuto extends LinearOpMode {
             telemetry.addData("PID Output", motionProfile.pidOutput);
             telemetry.addData("Output", motionProfile.output);
             telemetry.addData("Angle", Math.toDegrees(robot.pos.getHeading()));
-            telemetry.addData("Angle To", Math.toDegrees(Curve.getAngle(robot.pos, new Point(20, 20))));
+            telemetry.addData("Is Running", robot.DriveTrain.isPIDRunning());
 
             telemetry.update();
 

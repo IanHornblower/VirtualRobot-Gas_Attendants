@@ -230,6 +230,8 @@ public class Robot {
                 pos.xVelocity = dx/dt;
                 pos.yVelocity = dy/dt;
                 pos.headingVelocity = dTheta/dt;
+
+                pos.velocitySum = pos.xVelocity + pos.yVelocity + pos.headingVelocity;
         }
     }
 

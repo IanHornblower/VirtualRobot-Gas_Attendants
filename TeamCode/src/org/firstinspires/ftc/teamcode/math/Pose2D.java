@@ -9,6 +9,7 @@ public class Pose2D {
 
     public double x, y, heading;
     public double xVelocity, yVelocity, headingVelocity;
+    public double velocitySum, PIDSUM;
 
     public Pose2D (double x, double y, double heading) {
         this.x = x;

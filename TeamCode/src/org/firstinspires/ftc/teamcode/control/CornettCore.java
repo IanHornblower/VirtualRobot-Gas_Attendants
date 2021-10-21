@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.control;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import org.firstinspires.ftc.teamcode.hardware.DriveTrain;
+import jdk.jfr.internal.consumer.ChunkHeader;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.math.Curve;
 import org.firstinspires.ftc.teamcode.math.Point;
@@ -9,11 +9,17 @@ import org.firstinspires.ftc.teamcode.math.Pose2D;
 import org.firstinspires.ftc.teamcode.util.AngleUtil;
 import org.firstinspires.ftc.teamcode.util.MiniPID;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
+
 public class CornettCore extends OpMode {
 
     private Robot robot;
 
     private double zero = 1e-9;
+    boolean init = false;
+    double distance = 0;
 
     private double x, y, allowableDistanceError;
 
@@ -45,8 +51,8 @@ public class CornettCore extends OpMode {
     }
 
     public void runToPositionRaw(double x, double y, double heading, double allowableDistanceError) {
-        MiniPID xPID = new MiniPID(1, 0, 0);
-        MiniPID yPID = new MiniPID(1, 0, 0);
+        MiniPID xPID = new MiniPID(0.3, 0, 0);
+        MiniPID yPID = new MiniPID(0.3, 0, 0);
         MiniPID headingPID = new MiniPID(2, 0, 0);
 
         xPID.setSetpoint(x);
@@ -77,28 +83,20 @@ public class CornettCore extends OpMode {
         double headingControlPoint = direction * headingPIDOutput;
 
         robot.DriveTrain.driveFieldCentric(xControlPoint, yControlPoint, headingControlPoint);
+        robot.pos.PIDSUM = Math.abs(xPIDOutput + yPIDOutput * headingPIDOutput);
     }
 
-    public void runToPosition(double x, double y, double heading) {
+    public void runToPosition(double x, double y, double heading) throws InterruptedException {
         runToPositionRaw(x, y, heading, 1);
     }
 
-    public void runToPositionSync(double x, double y, double heading, double allowableDistanceError) {
-        robot.updateOdometry();
-        double dist = robot.pos.getDistanceFrom(new Point(x, y));
-        runToPosition(x, y, heading);
-        while(dist > allowableDistanceError) {
-        }
-        robot.DriveTrain.stopDrive();
-    }
-
-    public boolean isWithinRange(double range) {
-        return Point.inRange(robot.pos.toPoint(), new Point(x, y), range);
-    }
-
-    public void waitUntilInRange(double range) {
-        while(!isWithinRange(range)) {
-        }
+    public void runToPositionSync(double x, double y, double heading, double allowableDistanceError) throws InterruptedException {
+        distance = robot.pos.getDistanceFrom(new Point(x, y));
+        do {
+            robot.updateOdometry();
+            distance = robot.pos.getDistanceFrom(new Point(x, y));
+            runToPosition(x, y, heading);
+        } while(distance > allowableDistanceError);
     }
 
     @Override
