@@ -14,7 +14,7 @@ import static org.firstinspires.ftc.teamcode.util.MathUtil.roundPlaces;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 @TeleOp(name = "Testing OpMode", group = "Testing")
-public class TestOpMode extends LinearOpMode {
+public class TestTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -33,8 +33,6 @@ public class TestOpMode extends LinearOpMode {
             double turn = Controller.deadZone(gamepad1.right_stick_x, 0.1);
 
             robot.DriveTrain.driveFieldCentric(leftX, leftY, turn);
-
-            telemetry.addData("Is Running", robot.DriveTrain.isRunning());
 
             telemetry.addData("XYH", robot.pos.toString());
 

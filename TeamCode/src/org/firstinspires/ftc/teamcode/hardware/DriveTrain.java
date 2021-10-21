@@ -131,14 +131,6 @@ public class DriveTrain {
         adjustedAngle = radians;
     }
 
-    public boolean isRunning() {
-        return Math.abs(robot.pos.velocitySum) > 0;
-    }
-
-    public boolean isPIDRunning() {
-        return robot.pos.PIDSUM > 0;
-    }
-
     public DcMotor frontLeft() {
         return robot.getFrontLeft();
     }

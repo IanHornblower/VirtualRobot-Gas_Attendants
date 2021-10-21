@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.math.Point;
 import org.firstinspires.ftc.teamcode.math.Pose2D;
 import org.firstinspires.ftc.teamcode.util.AngleUtil;
 import org.firstinspires.ftc.teamcode.util.MiniPID;
+import virtual_robot.controller.BotConfig;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -17,11 +18,17 @@ public class CornettCore extends OpMode {
 
     private Robot robot;
 
+    MiniPID defaultXPID = new MiniPID(1, 0,0);
+    MiniPID defaultYPID = new MiniPID(1, 0,0);
+    MiniPID defaultHeadingPID = new MiniPID(2, 0,0);
+
+    double defaultXControlPointMultiplier = 1;
+    double defaultYControlPointMultiplier = 1;
+    double defaultHeadingControlPointMultiplier = 1;
+
     private double zero = 1e-9;
     boolean init = false;
     double distance = 0;
-
-    private double x, y, allowableDistanceError;
 
     public double output = 0, direction = 0, pidOutput = 0;
 
@@ -47,14 +54,23 @@ public class CornettCore extends OpMode {
     }
 
     public void rotate(double heading) {
-        rotateRaw(heading,0);
+        rotateRaw(heading,1);
     }
 
-    public void runToPositionRaw(double x, double y, double heading, double allowableDistanceError) {
-        MiniPID xPID = new MiniPID(0.3, 0, 0);
-        MiniPID yPID = new MiniPID(0.3, 0, 0);
-        MiniPID headingPID = new MiniPID(2, 0, 0);
+    public void rotateSync(double heading, double anglePrecision) {
+        distance = Curve.getShortestDistance(heading, anglePrecision);
 
+        do {
+            robot.updateOdometry();
+            distance = Curve.getShortestDistance(robot.pos.getHeading(), heading);
+            rotate(heading);
+        } while(distance > anglePrecision);
+    }
+
+    public void runToPositionRaw(double x, double y, double heading, MiniPID xPID,
+                                 MiniPID yPID, MiniPID headingPID,
+                                 double xControlPointMultiplier, double yControlPointMultiplier, double headingControlPointMultiplier)
+    {
         xPID.setSetpoint(x);
         yPID.setSetpoint(y);
         headingPID.setSetpoint(heading);
@@ -78,26 +94,46 @@ public class CornettCore extends OpMode {
         double xRawPower = Math.cos(theta);
         double yRawPower = Math.sin(theta);
 
-        double xControlPoint = xRawPower * xPIDOutput;
-        double yControlPoint = yRawPower * yPIDOutput;
-        double headingControlPoint = direction * headingPIDOutput;
+        double xControlPoint = xRawPower * xPIDOutput * xControlPointMultiplier;
+        double yControlPoint = yRawPower * yPIDOutput * yControlPointMultiplier;
+        double headingControlPoint = direction * headingPIDOutput * headingControlPointMultiplier;
 
         robot.DriveTrain.driveFieldCentric(xControlPoint, yControlPoint, headingControlPoint);
-        robot.pos.PIDSUM = Math.abs(xPIDOutput + yPIDOutput * headingPIDOutput);
     }
 
     public void runToPosition(double x, double y, double heading) throws InterruptedException {
-        runToPositionRaw(x, y, heading, 1);
+        runToPositionRaw(
+                x, y, heading,
+                defaultXPID, defaultYPID, defaultHeadingPID,
+                defaultXControlPointMultiplier, defaultYControlPointMultiplier, defaultHeadingControlPointMultiplier);
     }
 
-    public void runToPositionSync(double x, double y, double heading, double allowableDistanceError) throws InterruptedException {
+    public synchronized void runToPositionSyncRaw(double x, double y, double heading, double allowableDistanceError,
+                                                  MiniPID xPID, MiniPID yPID, MiniPID headingPID,
+                                                  double xControlPointMultiplier, double yControlPointMultiplier, double headingControlPointMultiplier) throws InterruptedException {
         distance = robot.pos.getDistanceFrom(new Point(x, y));
         do {
             robot.updateOdometry();
             distance = robot.pos.getDistanceFrom(new Point(x, y));
-            runToPosition(x, y, heading);
+            runToPositionRaw(
+                    x, y, heading,
+                    xPID, yPID, headingPID,
+                    xControlPointMultiplier, yControlPointMultiplier, headingControlPointMultiplier);
         } while(distance > allowableDistanceError);
     }
+
+    public synchronized void runToPositionSync(double x, double y, double heading, double allowableDistanceError) throws InterruptedException {
+        distance = robot.pos.getDistanceFrom(new Point(x, y));
+        do {
+            robot.updateOdometry();
+            distance = robot.pos.getDistanceFrom(new Point(x, y));
+            runToPositionSyncRaw(
+                    x, y, heading, allowableDistanceError,
+                    defaultXPID, defaultYPID, defaultHeadingPID,
+                    defaultXControlPointMultiplier, defaultYControlPointMultiplier, defaultHeadingControlPointMultiplier);
+        } while(distance > allowableDistanceError);
+    }
+
 
     @Override
     public void init() {

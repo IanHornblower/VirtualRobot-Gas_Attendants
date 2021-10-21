@@ -42,7 +42,6 @@ public class TestAuto extends LinearOpMode {
             telemetry.addData("PID Output", motionProfile.pidOutput);
             telemetry.addData("Output", motionProfile.output);
             telemetry.addData("Angle", Math.toDegrees(robot.pos.getHeading()));
-            telemetry.addData("Is Running", robot.DriveTrain.isPIDRunning());
 
             telemetry.update();
 
