@@ -40,35 +40,23 @@ public class TuneOdometricConstraints extends LinearOpMode {
 
             CornettCore motionProfile = new CornettCore(robot);
 
-            do {
-                robot.updateOdometry();
-                robot.updateVelocity();
-                robot.updateAcumulatedHeading();
+            robot.updateOdometry();
+            robot.updateVelocity();
+            robot.updateAcumulatedHeading();
 
-                motionProfile.tuneTrackWidthIMU(720, 1);
-                telemetry.addData("XYH", robot.pos.toString());
-                telemetry.addData("Odom Angle", robot.accumulatedHeading);
-                telemetry.addData("IMU Angle", robot.IMU.getAccumulatedHeadingInDegrees());
-                telemetry.addData("Latteral Encoder Reading", robot.getFrontEncoder().getCurrentPosition());
+            motionProfile.tuneTrackWidthIMU(Math.toRadians(720), 1);
+            telemetry.addData("XYH", robot.pos.toString());
+            telemetry.addData("Odom Angle", robot.accumulatedHeading);
+            telemetry.addData("IMU Angle", robot.IMU.getAccumulatedHeadingInDegrees());
+            telemetry.addData("Latteral Encoder Reading", robot.getFrontEncoder().getCurrentPosition());
 
-                telemetry.addData("\nError", robot.IMU.getAccumulatedHeadingInDegrees()-robot.accumulatedHeading);
-                telemetry.addData("Error Percent", robot.IMU.getAccumulatedHeadingInDegrees()/robot.accumulatedHeading);
-                telemetry.addData("Track Width Multiplier", robot.accumulatedHeading/robot.IMU.getAccumulatedHeadingInDegrees());
-                telemetry.addData("New Track Width (L) ", robot.L * (robot.accumulatedHeading/robot.IMU.getAccumulatedHeadingInDegrees()));
+            telemetry.addData("\nError", robot.IMU.getAccumulatedHeadingInDegrees()-robot.accumulatedHeading);
+            telemetry.addData("Error Percent", robot.IMU.getAccumulatedHeadingInDegrees()/robot.accumulatedHeading);
+            telemetry.addData("Track Width Multiplier", robot.accumulatedHeading/robot.IMU.getAccumulatedHeadingInDegrees());
+            telemetry.addData("New Track Width (L) ", robot.L * (robot.accumulatedHeading/robot.IMU.getAccumulatedHeadingInDegrees()));
 
-                telemetry.addData("\nLatteral Encoder Offset", (robot.getFrontEncoder().getCurrentPosition()/Math.toRadians(robot.IMU.getAccumulatedHeadingInDegrees()))*inchPerTick);
-                telemetry.update();
-
-            } while (robot.IMU.getAccumulatedHeadingInDegrees() < 720);
-            robot.DriveTrain.stopDrive();
-
-            sleep(1000000);
-
-
-
-
+            telemetry.addData("\nLatteral Encoder Offset", (robot.getFrontEncoder().getCurrentPosition()/Math.toRadians(robot.IMU.getAccumulatedHeadingInDegrees()))*inchPerTick);
             telemetry.update();
-
         }
     }
 }

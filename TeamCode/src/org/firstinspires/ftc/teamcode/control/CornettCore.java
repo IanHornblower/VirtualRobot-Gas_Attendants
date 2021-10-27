@@ -53,7 +53,7 @@ public class CornettCore extends OpMode {
         turnPID.setSetpoint(heading);
         turnPID.setOutputLimits(-1, 1);
 
-        turnPID.setError(Curve.getShortestDistance(Math.toDegrees(heading), robot.accumulatedHeading));
+        turnPID.setError(Math.abs(heading - Math.toRadians(robot.IMU.getAccumulatedHeadingInDegrees())));
 
         turnPIDOutput = turnPID.getOutput(AngleUtil.deNormalizeAngle(robot.IMU.getAccumulatedHeadingInDegrees()));
         output = direction * turnPIDOutput * defaultTurnOutputMultiplier;
