@@ -27,6 +27,7 @@ public class TestTeleOp extends LinearOpMode {
         while(opModeIsActive()) {
             robot.updateOdometry();
             robot.updateVelocity();
+            robot.updateAcumulatedHeading();
 
             double leftX = AngleUtil.powRetainingSign(Controller.deadZone(gamepad1.left_stick_x, 0.1), LEFT_TRIGGER_X_POW);
             double leftY = AngleUtil.powRetainingSign(Controller.deadZone(-gamepad1.left_stick_y, 0.1), LEFT_TRIGGER_Y_POW);
@@ -34,7 +35,7 @@ public class TestTeleOp extends LinearOpMode {
 
             robot.DriveTrain.driveFieldCentric(leftX, leftY, turn);
 
-            telemetry.addData("IMY", robot.IMU.getRawIMUHeadingInDegrees());
+            telemetry.addData("XYH", robot.pos.toString());
             telemetry.update();
         }
     }

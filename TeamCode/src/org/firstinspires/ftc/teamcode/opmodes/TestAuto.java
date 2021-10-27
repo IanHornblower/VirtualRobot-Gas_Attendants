@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.control.CornettCore;
+import org.firstinspires.ftc.teamcode.control.Trajectory;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.math.Curve;
 import org.firstinspires.ftc.teamcode.math.Point;
@@ -31,9 +32,7 @@ public class TestAuto extends LinearOpMode {
             robot.updateVelocity();
 
             CornettCore motionProfile = new CornettCore(robot);
-
-            motionProfile.rotateSync(360, 1);
-            motionProfile.rotateSync(360, 1);
+            Trajectory path1 = new Trajectory(robot);
         }
     }
 }

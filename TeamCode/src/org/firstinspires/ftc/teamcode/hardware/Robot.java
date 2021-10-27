@@ -26,18 +26,22 @@ public class Robot extends OpMode {
     private BNO055IMU imu;
     private Orientation angles;
 
+    private double previousHeading;
+
     public HardwareMap hwMap;
     public DriveTrain DriveTrain;
     public IMU IMU;
 
+    public enum controlType{ROBOT, FIELD}
+
     // Robot Kinematics
 
     // Odmometric Constraints
-    final static double L = 12;  // separation between left and right Encoder.
-    final static double lateralOffset = -6.0;  // offset between origin of robot and lateral Encoder.
-    final static double R = 1.0;  // Encoder wheel radius.
-    final static double encoderTicksPerRev = 1120;  // Ticks read per revolution of REV Encoder.
-    final static double inchPerTick = 2.0 * Math.PI * R / encoderTicksPerRev;  // Inches traveled per tick moved.
+    public final static double L = 12;  // separation between left and right Encoder.
+    public final static double lateralOffset = -6;  // offset between origin of robot and lateral Encoder.
+    public final static double R = 1.0;  // Encoder wheel radius.
+    public final static double encoderTicksPerRev = 1120;  // Ticks read per revolution of REV Encoder.
+    public final static double inchPerTick = 2.0 * Math.PI * R / encoderTicksPerRev;  // Inches traveled per tick moved.
 
 
     // Velocity
@@ -157,6 +161,8 @@ public class Robot extends OpMode {
     private int oldLeftPosition = 0;
     private int oldLateralPosition = 0;
 
+    public double accumulatedHeading = 0;
+
     public Pose2D START_POSITION = new Pose2D(0, 0, AngleUtil.interpretAngle(90));  // Default
 
     public void setSTART_POSITION(Pose2D START) {
@@ -165,6 +171,22 @@ public class Robot extends OpMode {
     }
 
     public Pose2D pos = START_POSITION;
+
+    public void updateAcumulatedHeading() {
+        double currentHeading = Math.toDegrees(pos.getHeading());
+
+        double dHeading = currentHeading - previousHeading;
+
+        if(dHeading < -180) {
+            dHeading += 360;
+        }
+        else if(dHeading >= 180) {
+            dHeading -=360;
+        }
+
+        accumulatedHeading -= dHeading;
+        previousHeading = currentHeading;
+    }
 
     public void updateOdometry() { // make update() --> odometry() if need be [Merge with UpdateVelocities()
         currentRightPosition = rightEncoder.getCurrentPosition(); // Invert in Necessary

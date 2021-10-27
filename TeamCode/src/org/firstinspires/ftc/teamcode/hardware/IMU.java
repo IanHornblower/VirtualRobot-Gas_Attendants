@@ -13,6 +13,9 @@ public class IMU {
     BNO055IMU imu;
     Orientation angles;
 
+    double previousHeading = 0;
+    double accumulatedHeading = 0;
+
     public IMU() {
 
     }
@@ -57,6 +60,24 @@ public class IMU {
         }
         return Math.abs(currentHeading);
     }
+
+    public double getAccumulatedHeadingInDegrees() {
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double currentHeading = -angles.firstAngle;
+        double dHeading = currentHeading - previousHeading;
+
+        if(dHeading < -180) {
+            dHeading += 360;
+        }
+        else if(dHeading >= 180) {
+            dHeading -=360;
+        }
+
+        accumulatedHeading += dHeading;
+        previousHeading = currentHeading;
+
+        return accumulatedHeading;
+     }
 
     public double getIMUHeading() {
         return Math.toRadians(getIMUHeadingInDegrees());
