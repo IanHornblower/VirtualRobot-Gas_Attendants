@@ -3,13 +3,19 @@ package org.firstinspires.ftc.teamcode.math;
 import org.firstinspires.ftc.teamcode.hardware.DriveTrain;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 
+import static org.firstinspires.ftc.teamcode.util.MathUtil.roundPlaces;
+
 public class Point {
 
-    private double x, y;
+    public double x, y;
 
     public Point(double x, double y) {
         this.x = x;
         this.y = y;
+    }
+
+    public Point() {
+
     }
 
     public void invertPose() {
@@ -21,6 +27,10 @@ public class Point {
     public void scalePose(double scaleFactor) {
         x *= scaleFactor;
         y *= scaleFactor;
+    }
+
+    public Point add(Point point) {
+        return new Point(x+point.x, y+point.y);
     }
 
     public double getY() {
@@ -56,5 +66,11 @@ public class Point {
         else {
             return false;
         }
+    }
+
+    public String toString() {
+        return String.format(
+                roundPlaces(x, 1) +
+                        " " + roundPlaces(y, 1));
     }
 }

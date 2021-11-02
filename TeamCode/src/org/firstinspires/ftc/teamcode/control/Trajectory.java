@@ -1,15 +1,11 @@
 package org.firstinspires.ftc.teamcode.control;
 
-import com.qualcomm.robotcore.hardware.AnalogInput;
-import javafx.geometry.Pos;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.math.Point;
 import org.firstinspires.ftc.teamcode.math.Pose2D;
 import org.firstinspires.ftc.teamcode.util.AngleUtil;
-import org.firstinspires.ftc.teamcode.util.Array;
 
 import java.util.ArrayList;
-
-// TODO: Fixed the mess, now the Robot Centric Controls need to be fine tuned.
 
 public class Trajectory {
 
@@ -19,12 +15,17 @@ public class Trajectory {
 
     Pose2D startPos;
 
+    Robot robot;
+
     public Trajectory (Robot robot, Pose2D startPos) {
         this.motionProfile = new CornettCore(robot);
         this.startPos = startPos;
+        this.robot = robot;
 
         path.add(startPos);
     }
+
+    public enum PATH_TYPE {BASIC, PURE_PURSUIT, DIFFERENTIAL_PURE_PURSUIT}
 
     public ArrayList<Pose2D> get() {
         return path;
@@ -44,6 +45,7 @@ public class Trajectory {
     }
 
     public void forward(double distance, Robot.controlType style) {
+        Pose2D previous = path.get(path.size()-1);
         switch (style) {
             default:
                 Pose2D point;
@@ -52,71 +54,132 @@ public class Trajectory {
                 path.add(point);
                 break;
             case ROBOT:
-                double x = distance * Math.cos(path.get(path.size()-1).heading);
-                double y = distance * Math.sin(path.get(path.size()-1).heading);
-                point = new Pose2D(path.get(path.size()-1).x + x, path.get(path.size()-1).y + y, path.get(path.size()-1).heading);
+                double x = distance * Math.cos(AngleUtil.interpretRadians(previous.heading));
+                double y = distance * Math.sin(AngleUtil.interpretRadians(previous.heading));
+                point = new Pose2D(previous.x + x, previous.y + y, previous.heading);
                 path.add(point);
                 break;
         }
     }
 
     public void backward(double distance, Robot.controlType style) {
+        Pose2D previous = path.get(path.size()-1);
         distance *= -1;
         switch (style) {
             default:
                 Pose2D point;
             case FIELD:
-                point = new Pose2D(path.get(path.size()-1).x, path.get(path.size()-1).y-distance, path.get(path.size()-1).heading);
+                point = new Pose2D(previous.x, previous.y-distance, previous.heading);
                 path.add(point);
                 break;
             case ROBOT:
-                double x = -distance * Math.cos(path.get(path.size()-1).heading);
-                double y = -distance * Math.sin(path.get(path.size()-1).heading);
-                point = new Pose2D(path.get(path.size()-1).x + x, path.get(path.size()-1).y + y, path.get(path.size()-1).heading);
+                double x = distance * Math.cos(AngleUtil.interpretRadians(previous.heading));
+                double y = distance * Math.sin(AngleUtil.interpretRadians(previous.heading));
+                point = new Pose2D(previous.x + x, previous.y + y, previous.heading);
                 path.add(point);
                 break;
         }
     }
 
     public void right(double distance, Robot.controlType style) {
+        Pose2D previous = path.get(path.size()-1);
         switch (style) {
             default:
                 Pose2D point;
             case FIELD:
-                point = new Pose2D(path.get(path.size()-1).x + distance, path.get(path.size()-1).y, path.get(path.size()-1).heading);
+                point = new Pose2D(previous.x + distance, previous.y, previous.heading);
                 path.add(point);
                 break;
             case ROBOT:
-                double x = distance * Math.cos(path.get(path.size()-1).heading - Math.PI/2.0);
-                double y = distance * Math.sin(path.get(path.size()-1).heading - Math.PI/2.0);
-                point = new Pose2D(path.get(path.size()-1).x + x, path.get(path.size()-1).y + y, path.get(path.size()-1).heading);
+                double x = distance * Math.cos(AngleUtil.interpretRadians(previous.heading + Math.PI/2.0));
+                double y = distance * Math.sin(AngleUtil.interpretRadians(previous.heading + Math.PI/2.0));
+                point = new Pose2D(previous.x + x, previous.y + y, previous.heading);
                 path.add(point);
                 break;
         }
     }
 
     public void left(double distance, Robot.controlType style) {
+        Pose2D previous = path.get(path.size()-1);
         switch (style) {
             default:
                 Pose2D point;
             case FIELD:
-                point = new Pose2D(path.get(path.size()-1).x, path.get(path.size()-1).y+distance, path.get(path.size()-1).heading);
+                point = new Pose2D(previous.x, previous.y+distance, previous.heading);
                 path.add(point);
                 break;
             case ROBOT:
-                double x = distance * Math.cos(path.get(path.size()-1).heading+Math.PI/2.0);
-                double y = distance * Math.sin(path.get(path.size()-1).heading+Math.PI/2.0);
-                point = new Pose2D(path.get(path.size()-1).x + x, path.get(path.size()-1).y + y, path.get(path.size()-1).heading);
+                double x = distance * Math.cos(AngleUtil.interpretRadians(previous.heading - Math.PI/2.0));
+                double y = distance * Math.sin(AngleUtil.interpretRadians(previous.heading - Math.PI/2.0));
+                point = new Pose2D(previous.x + x, previous.y + y, previous.heading);
                 path.add(point);
                 break;
         }
     }
 
-    public void runPath(double allowableDistanceError) throws InterruptedException {
-        double pathLength = path.size();
-        for(int i = 0; i < pathLength; i++) {
-            motionProfile.runToPositionSync(path.get(i).getX(), path.get(i).getY(), path.get(i).getHeading(), allowableDistanceError);
+    public void followPath(PATH_TYPE type, double allowableDistanceError) throws InterruptedException {
+        switch (type) {
+            case BASIC:
+                double pathLength = path.size();
+                for(int i = 0; i < pathLength; i++) {
+                    motionProfile.runToPositionSync(path.get(i).getX(), path.get(i).getY(), path.get(i).getHeading(), allowableDistanceError);
+                }
+                break;
+            default:
+                // Wrong Path Type - Try BASIC
         }
     }
 
+    public void followPath(PATH_TYPE type, double tangent, double allowableDistanceError) throws InterruptedException {
+        switch (type) {
+            case BASIC:
+                double pathLength = path.size();
+                for(int i = 0; i < pathLength; i++) {
+                    motionProfile.runToPositionSync(path.get(i).getX(), path.get(i).getY(), path.get(i).getHeading(), allowableDistanceError);
+                }
+                motionProfile.rotateSync(tangent, Math.toRadians(allowableDistanceError));
+                break;
+            default:
+                // Wrong Path Type - Try BASIC
+        }
+    }
+
+    public void followPath(PATH_TYPE type, double radius, double tangent, double allowableDistanceError) throws InterruptedException {
+        switch (type) {
+            case PURE_PURSUIT:
+                double pathLength = path.size();
+                ArrayList<Pose2D> extendedPath = PurePursuit.extendPath(path, radius);
+
+                double distance = robot.pos.getDistanceFrom(path.get(path.size() - 1));
+
+                do {
+                    Point pointToFollow = PurePursuit.getFollowPoint(extendedPath, robot, radius);
+
+                    double x = pointToFollow.getX(), y = pointToFollow.getY();
+                    double dx = x - robot.pos.x, dy = y - robot.pos.y;
+
+                    distance = robot.pos.getDistanceFrom(path.get(path.size() - 1));
+                    motionProfile.runToPosition(x, y, tangent);
+                } while(distance > allowableDistanceError+radius);
+                break;
+            case DIFFERENTIAL_PURE_PURSUIT:
+                extendedPath = PurePursuit.extendPath(path, radius);
+
+                do {
+                    Point pointToFollow = PurePursuit.getFollowPoint(extendedPath, robot, radius);
+
+                    double x = pointToFollow.getX(), y = pointToFollow.getY();
+                    double dx = x - robot.pos.x, dy = y - robot.pos.y;
+                    double theta = Math.atan2(dy, dx);
+                    distance = robot.pos.getDistanceFrom(path.get(path.size() - 1));
+                    motionProfile.runToPosition(x, y, theta);
+
+                } while(distance > allowableDistanceError+radius);
+                motionProfile.rotateSync(tangent, Math.toRadians(allowableDistanceError));
+                break;
+            default:
+                // Wrong Path Type - Try either Pure Pursuit Path types
+
+        }
+    }
 }

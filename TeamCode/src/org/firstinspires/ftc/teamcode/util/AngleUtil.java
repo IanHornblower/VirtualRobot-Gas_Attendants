@@ -115,6 +115,11 @@ public class AngleUtil {
         return Math.toRadians(180 - degrees);
     }
 
+    public static double interpretRadians(double radians) {
+        radians = Math.toDegrees(radians);
+        return Math.toRadians(180 - radians);
+    }
+
     /**
      *
      * @param d Small
@@ -128,5 +133,4 @@ public class AngleUtil {
         }
         return Math.copySign(Math.pow(Math.abs(d), power), d);
     }
-
 }

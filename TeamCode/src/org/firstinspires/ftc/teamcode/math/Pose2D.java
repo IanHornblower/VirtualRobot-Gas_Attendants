@@ -16,6 +16,12 @@ public class Pose2D {
         this.heading = heading;
     }
 
+    public Pose2D (Point point, double heading) {
+        x = point.x;
+        y = point.y;
+        this.heading = heading;
+    }
+
     public void invertPose() {
         double tempX = x, tempY = y;
         x = tempY;
