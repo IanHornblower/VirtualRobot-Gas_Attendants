@@ -32,7 +32,7 @@ public class TestAuto extends LinearOpMode {
 
             CornettCore motionProfile = new CornettCore(robot);
 
-            path1.followPath(Trajectory.PATH_TYPE.DIFFERENTIAL_PURE_PURSUIT, 5, Math.toRadians(0), 1);
+            path1.followPath(Trajectory.PATH_TYPE.DIFFERENTIAL_PURE_PURSUIT, 5, 1);
 
             telemetry.addData("Static XYH", new Pose2D(20, 60, 0).toString());
             telemetry.addData("XYH", robot.pos.toString());

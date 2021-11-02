@@ -130,17 +130,36 @@ public class Trajectory {
         }
     }
 
-    public void followPath(PATH_TYPE type, double tangent, double allowableDistanceError) throws InterruptedException {
+    public void followPath(PATH_TYPE type, double radius, double allowableDistanceError) throws InterruptedException {
         switch (type) {
-            case BASIC:
-                double pathLength = path.size();
-                for(int i = 0; i < pathLength; i++) {
-                    motionProfile.runToPositionSync(path.get(i).getX(), path.get(i).getY(), path.get(i).getHeading(), allowableDistanceError);
-                }
+            case DIFFERENTIAL_PURE_PURSUIT:
+                ArrayList<Pose2D> extendedPath = PurePursuit.extendPath(path, radius);
+
+                double distance = robot.pos.getDistanceFrom(path.get(path.size() - 1));
+
+                Point lastPoint = path.get(path.size()-1).toPoint();
+                Point anteLastPoint = path.get(path.size()-2).toPoint();
+
+                double dxPer = lastPoint.x - anteLastPoint.x;
+                double dyPer = lastPoint.y - anteLastPoint.y;
+
+                double tangent = Math.atan2(dyPer, dxPer);
+
+                do {
+                    Point pointToFollow = PurePursuit.getFollowPoint(extendedPath, robot, radius);
+
+                    double x = pointToFollow.getX(), y = pointToFollow.getY();
+                    double dx = x - robot.pos.x, dy = y - robot.pos.y;
+                    double theta = Math.atan2(dy, dx);
+                    distance = robot.pos.getDistanceFrom(path.get(path.size() - 1));
+                    motionProfile.runToPosition(x, y, theta);
+
+                } while(distance > allowableDistanceError+radius);
                 motionProfile.rotateSync(tangent, Math.toRadians(allowableDistanceError));
                 break;
             default:
-                // Wrong Path Type - Try BASIC
+                // Wrong Path Type - Try either Pure Pursuit Path types
+
         }
     }
 
