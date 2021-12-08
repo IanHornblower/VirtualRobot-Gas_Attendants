@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.control;
 
+import org.firstinspires.ftc.teamcode.PurePursuit.PurePursuit;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.math.Point;
 import org.firstinspires.ftc.teamcode.math.Pose2D;
@@ -29,6 +30,10 @@ public class Trajectory {
 
     public ArrayList<Pose2D> get() {
         return path;
+    }
+
+    public Pose2D end() {
+        return path.get(path.size()-1);
     }
 
     public void addWaypoint(Pose2D waypoint) {
@@ -146,13 +151,14 @@ public class Trajectory {
                 double tangent = Math.atan2(dyPer, dxPer);
 
                 do {
-                    Point pointToFollow = PurePursuit.getFollowPoint(extendedPath, robot, radius);
+                    Point pointToFollow = PurePursuit.getLookAheadPoint(extendedPath, robot, radius);
 
                     double x = pointToFollow.getX(), y = pointToFollow.getY();
                     double dx = x - robot.pos.x, dy = y - robot.pos.y;
                     double theta = Math.atan2(dy, dx);
                     distance = robot.pos.getDistanceFrom(path.get(path.size() - 1));
-                    motionProfile.runToPosition(x, y, theta);
+                    //motionProfile.runToPosition(x, y, theta);
+                    robot.DriveTrain.setDifMotor(x, y, allowableDistanceError);
 
                 } while(distance > allowableDistanceError+radius);
                 motionProfile.rotateSync(tangent, Math.toRadians(allowableDistanceError));
@@ -181,7 +187,7 @@ public class Trajectory {
                     motionProfile.runToPosition(x, y, tangent);
                 } while(distance > allowableDistanceError+radius);
                 break;
-            case DIFFERENTIAL_PURE_PURSUIT:
+            case BASIC: // DIF PP
                 extendedPath = PurePursuit.extendPath(path, radius);
 
                 do {
@@ -200,5 +206,19 @@ public class Trajectory {
                 // Wrong Path Type - Try either Pure Pursuit Path types
 
         }
+    }
+    public void testNewPP(double radius) throws InterruptedException {
+        double pathLength = path.size();
+        ArrayList<Pose2D> extendedPath = PurePursuit.extendPath(path, radius);
+
+        double distance = robot.pos.getDistanceFrom(path.get(path.size() - 1));
+
+        do {
+            Point pointToFollow = PurePursuit.getFollowPoint(extendedPath, robot, radius);
+
+            motionProfile.runToPosition(pointToFollow.x, pointToFollow.y, pointToFollow.atan2());
+
+
+        } while(distance > 1+radius);
     }
 }

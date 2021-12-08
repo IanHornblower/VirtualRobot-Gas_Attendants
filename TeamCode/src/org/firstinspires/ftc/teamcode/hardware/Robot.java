@@ -7,16 +7,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.math.Angle;
 import org.firstinspires.ftc.teamcode.math.Pose2D;
 import org.firstinspires.ftc.teamcode.util.AngleUtil;
-
-import java.awt.event.ItemListener;
-import java.util.Timer;
-import java.util.concurrent.TimeUnit;
 
 public class Robot extends OpMode {
     private DcMotor backLeft, backRight, frontLeft, frontRight;
@@ -42,6 +36,8 @@ public class Robot extends OpMode {
     public final static double R = 1.0;  // Encoder wheel radius.
     public final static double encoderTicksPerRev = 1120;  // Ticks read per revolution of REV Encoder.
     public final static double inchPerTick = 2.0 * Math.PI * R / encoderTicksPerRev;  // Inches traveled per tick moved.
+
+    public final static double TRACKWIDTH = 15;
 
 
     // Velocity
@@ -163,6 +159,10 @@ public class Robot extends OpMode {
 
     public double accumulatedHeading = 0;
 
+    public double leftVelocity = 0;
+    public double rightVelocity = 0;
+    public double lateralVelocity = 0;
+
     public Pose2D START_POSITION = new Pose2D(0, 0, AngleUtil.interpretAngle(90));  // Default
 
     public void setSTART_POSITION(Pose2D START) {
@@ -217,7 +217,7 @@ public class Robot extends OpMode {
         oldLeftPosition = currentLeftPosition;
         oldLateralPosition = currentLateralPosition;
 
-        telemetry.addData("XYH", pos.toString());
+        //telemetry.addData("XYH", pos.toString());
         //telemetry.update();
     }
 
@@ -258,6 +258,11 @@ public class Robot extends OpMode {
                 pos.yVelocity = dy/dt;
                 pos.headingVelocity = dTheta/dt;
         }
+    }
+    public void updateEncoderVelocity() {
+        leftVelocity = leftEncoder.getVelocity()*inchPerTick;
+        rightVelocity = rightEncoder.getVelocity()*inchPerTick;
+        lateralVelocity = lateralEncoder.getVelocity()*inchPerTick;
     }
 
     public void stopDrive() {

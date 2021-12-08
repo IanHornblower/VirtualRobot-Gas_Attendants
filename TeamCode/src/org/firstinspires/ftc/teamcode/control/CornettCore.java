@@ -18,7 +18,7 @@ public class CornettCore extends OpMode {
 
     MiniPID defaultXPID = new MiniPID(1, 0,0);
     MiniPID defaultYPID = new MiniPID(1, 0,0);
-    MiniPID defaultHeadingPID = new MiniPID(2, 0,0);
+    MiniPID defaultHeadingPID = new MiniPID(5, 0,0);
 
     double defaultXControlPointMultiplier = 1;
     double defaultYControlPointMultiplier = 1;

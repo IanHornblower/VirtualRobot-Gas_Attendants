@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode.util;
 
+import org.firstinspires.ftc.teamcode.PurePursuit.Waypoint;
+import org.firstinspires.ftc.teamcode.math.Point;
 import org.firstinspires.ftc.teamcode.math.Pose2D;
+
+import java.util.ArrayList;
 
 public class Array {
     /**
@@ -39,5 +43,18 @@ public class Array {
         newarr[n] = pose;
 
         return newarr;
+    }
+
+    public static ArrayList<Waypoint> reverseArrayList(ArrayList<Waypoint> alist) {
+        // Arraylist for storing reversed elements
+        ArrayList<Waypoint> revArrayList = new ArrayList<Waypoint>();
+        for (int i = alist.size() - 1; i >= 0; i--) {
+
+            // Append the elements in reverse order
+            revArrayList.add(alist.get(i));
+        }
+
+        // Return the reversed arraylist
+        return revArrayList;
     }
 }

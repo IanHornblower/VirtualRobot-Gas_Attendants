@@ -2,10 +2,15 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import org.firstinspires.ftc.teamcode.PurePursuit.PurePursuitTrajectory;
+import org.firstinspires.ftc.teamcode.PurePursuit.Waypoint;
 import org.firstinspires.ftc.teamcode.control.CornettCore;
 import org.firstinspires.ftc.teamcode.control.Trajectory;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.math.Point;
 import org.firstinspires.ftc.teamcode.math.Pose2D;
+import org.firstinspires.ftc.teamcode.telemetry.AutoConfig;
 import org.firstinspires.ftc.teamcode.util.AngleUtil;
 import org.firstinspires.ftc.teamcode.util.Controller;
 import static org.firstinspires.ftc.teamcode.util.Controller.*;
@@ -38,9 +43,22 @@ public class TestAuto extends LinearOpMode {
 
         Trajectory path1 = new Trajectory(robot, robot.START_POSITION);
 
-        path1.addWaypoint(new Pose2D(0, 16, 0));
-        path1.addWaypoint(new Pose2D(16, 32, 0));
-        path1.forward(16, Robot.controlType.FIELD);
+        path1.addWaypoint(new Pose2D(25, 25, 0));
+        path1.addWaypoint(new Pose2D(60, 30, 0));
+        path1.addWaypoint(new Pose2D(30, 73, 0));
+
+        String[][] config = {
+                {"Side", "Red", "Blue"},
+                {"Parking", "Warehouse", "Storage"},
+        };
+
+        AutoConfig autoTele = new AutoConfig(telemetry, config);
+
+
+
+
+
+
 
         waitForStart();
 
@@ -48,19 +66,36 @@ public class TestAuto extends LinearOpMode {
 
         Future<Boolean> plan = this.followPath(path1);
 
+        //PurePursuitTrajectory ppTraj = new PurePursuitTrajectory(robot, robot.START_POSITION, 20, 2);
+
+        //ppTraj.addWaypoint(new Waypoint(new Point(12, 12)));
+        //ppTraj.addWaypoint(new Waypoint(new Point(12, 24)));
+
+        //ppTraj.buildTrajectory();
+
         while(opModeIsActive()) {
             robot.updateOdometry();
             robot.updateVelocity();
 
-
-
+            /**
             if(plan.isDone()) {
                 telemetry.addData("Static XYH", new Pose2D(20, 60, 0).toString());
                 telemetry.addData("XYH", robot.pos.toString());
                 telemetry.update();
                 stop();
             }
+             */
 
+
+            //robot.DriveTrain.setDifMotor(24, 24, 0.1);
+
+            //ppTraj.followTrajectory(12, 1);
+
+            path1.followPath(Trajectory.PATH_TYPE.BASIC, 12, 1, 0.5);
+
+            //path1.testNewPP(12);
+
+           //stop();
         }
     }
 }

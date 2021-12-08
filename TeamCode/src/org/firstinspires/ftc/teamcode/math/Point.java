@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.math;
 
+import org.firstinspires.ftc.teamcode.PurePursuit.Waypoint;
 import org.firstinspires.ftc.teamcode.hardware.DriveTrain;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 
@@ -29,8 +30,20 @@ public class Point {
         y *= scaleFactor;
     }
 
+    public Point scalar(double scaleFactor) {
+        return new Point(x * scaleFactor, y * scaleFactor);
+    }
+
     public Point add(Point point) {
         return new Point(x+point.x, y+point.y);
+    }
+
+    public Point subtract(Point point) {
+        return new Point(x-point.x, y-point.y);
+    }
+
+    public double dot(Point other) {
+        return x * other.x + y * other.y;
     }
 
     public double getY() {

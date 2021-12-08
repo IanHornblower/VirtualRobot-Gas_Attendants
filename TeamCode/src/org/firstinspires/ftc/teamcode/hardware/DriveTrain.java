@@ -2,7 +2,12 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import org.firstinspires.ftc.teamcode.ControlLoops.PController;
+import org.firstinspires.ftc.teamcode.ControlLoops.PIDController;
+import org.firstinspires.ftc.teamcode.math.Angle;
 import org.firstinspires.ftc.teamcode.math.Point;
+import org.firstinspires.ftc.teamcode.util.AngleUtil;
+import org.firstinspires.ftc.teamcode.util.MathUtil;
 import org.firstinspires.ftc.teamcode.util.MiniPID;
 
 
@@ -37,6 +42,65 @@ public class DriveTrain {
 
 
         setMotorPowers(controlPointX, controlPointY, controlPointTurn);
+    }
+
+    double m = 0, t = 0;
+
+    public void setDifMotor(double targetX, double targetY, double error) {
+        robot.updateOdometry();
+
+        PIDController distanceController = new PController(0.07);
+        PIDController angleController = new PController(3); // 10
+
+        double xError = targetX - robot.pos.x;
+        double yError = targetY - robot.pos.y;
+        double theta = Math.atan2(yError,xError);
+
+        double distance = robot.pos.getDistanceFrom(new Point(targetX, targetY));
+
+        if (distance > error) {
+            robot.updateOdometry();
+            f = distanceController.calculate(distance,0);
+            t = angleController.calculate(robot.pos.getHeading(), theta);
+        } else {
+            robot.updateOdometry();
+            f = 0;
+            t = angleController.calculate(robot.pos.getHeading(), theta);
+        }
+
+        double left = f + t;
+        double right = f - t;
+
+        setMotorPowers(left, right);
+    }
+
+    boolean init = false;
+
+    Point startPos = new Point(0, 0);
+    double lolTheta = 0;
+
+    public void diffyLolPogger(Point end) {
+        robot.updateOdometry();
+
+        double tP = 0.1, fP = 1;
+
+        if(!init) {
+            startPos = robot.pos.toPoint();
+            lolTheta = startPos.atan2();
+
+            init = true;
+        }
+
+        double r = robot.pos.getDistanceFrom(end);
+        double e = lolTheta - robot.pos.getHeading();
+
+        double left = r*fP + e*tP;
+        double right = -r*fP - e*tP;
+
+        setMotorPowers(
+                -left,
+                -right
+                );
     }
 
     public void driveFieldCentric(double x, double y, double turn) {
