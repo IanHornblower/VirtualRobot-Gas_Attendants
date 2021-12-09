@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.control.CornettCore;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
@@ -8,6 +9,7 @@ import org.firstinspires.ftc.teamcode.math.Pose2D;
 import org.firstinspires.ftc.teamcode.util.AngleUtil;
 import static org.firstinspires.ftc.teamcode.hardware.Robot.*;
 
+@Disabled
 @Autonomous(name = "Calculate Track Width Error", group = "Tuning")
 public class TuneOdometricConstraints extends LinearOpMode {
 

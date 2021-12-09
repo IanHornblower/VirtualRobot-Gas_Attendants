@@ -18,32 +18,24 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Autonomous(name = "Redauto", group = "Testing")
-public class RedSideAuto extends LinearOpMode {
+@Autonomous(name = "Test Motion Profile", group = "Testing")
+public class MotionProfileAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
 
-        robot.setSTART_POSITION(new Pose2D(63, 12, AngleUtil.interpretAngle(0)));
+        robot.setSTART_POSITION(new Pose2D(0, 0, AngleUtil.interpretAngle(90)));
 
         // Paths
 
-        Trajectory toTeamShippingHub = new Trajectory(robot, robot.START_POSITION);
+        Trajectory joe  = new Trajectory(robot, robot.START_POSITION);
 
-        toTeamShippingHub.addWaypoint(new Pose2D(40, -2, AngleUtil.interpretAngle(30)));
-
-        Trajectory joe  = new Trajectory(robot, toTeamShippingHub.end());
-
-        joe.addWaypoint(new Pose2D(42.888888888888886, -0.8888888888888888, 0));
-        joe.addWaypoint(new Pose2D(61.55555555555556, 20.22222222222222, 0));
-        joe.addWaypoint(new Pose2D(62.44444444444444, 31.555555555555557, 0));
-        joe.addWaypoint(new Pose2D(54.0, 37.111111111111114, 0));
-        joe.addWaypoint(new Pose2D(40.22222222222222, 37.333333333333336, 0));
-        joe.addWaypoint(new Pose2D(39.77777777777778, 56.666666666666664, 0));
-
-
-
+        joe.addWaypoint(new Pose2D(0.4444444444444444, 0.2222222222222222, 0));
+        joe.addWaypoint(new Pose2D(12.88888888888889,  11.11111111111111, 0));
+        joe.addWaypoint(new Pose2D(31.11111111111111,  13.555555555555555, 0));
+        joe.addWaypoint(new Pose2D(16.88888888888889,  34.44444444444444, 0));
+        joe.addWaypoint(new Pose2D(24.22222222222222,  48.666666666666664, 0));
 
         waitForStart();
 
@@ -54,10 +46,6 @@ public class RedSideAuto extends LinearOpMode {
             robot.updateVelocity();
 
             // Start
-
-            toTeamShippingHub.followPath(Trajectory.PATH_TYPE.BASIC, 1);
-
-            //sleep(1000);
 
             joe.followPath(Trajectory.PATH_TYPE.DIFFERENTIAL_PURE_PURSUIT, 8, 1);
 

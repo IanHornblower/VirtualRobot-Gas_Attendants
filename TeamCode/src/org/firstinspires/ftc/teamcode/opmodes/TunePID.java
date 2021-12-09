@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.control.CornettCore;
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.teamcode.util.Controller;
 import static org.firstinspires.ftc.teamcode.util.Controller.*;
 import static org.firstinspires.ftc.teamcode.util.MathUtil.roundPlaces;
 
+@Disabled
 @TeleOp(name = "TunePID", group = "Tuning")
 public class TunePID extends LinearOpMode {
 

@@ -5,14 +5,19 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.ControlLoops.PController;
 import org.firstinspires.ftc.teamcode.ControlLoops.PIDController;
 import org.firstinspires.ftc.teamcode.math.Angle;
+import org.firstinspires.ftc.teamcode.math.Curve;
 import org.firstinspires.ftc.teamcode.math.Point;
 import org.firstinspires.ftc.teamcode.util.AngleUtil;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 import org.firstinspires.ftc.teamcode.util.MiniPID;
 
+import java.util.Currency;
+
 
 public class DriveTrain {
     private final double maximumMotorSpeed = 0.85;
+
+    public enum DIRECTION {FORWARD, BACKWARD};
 
     private double p = 0, i = 0, d = 0, f = 0;
 
@@ -44,29 +49,22 @@ public class DriveTrain {
         setMotorPowers(controlPointX, controlPointY, controlPointTurn);
     }
 
-    double m = 0, t = 0;
+    double t = 0;
 
-    public void setDifMotor(double targetX, double targetY, double error) {
+    public void setDifMotorForward(double targetX, double targetY) {
         robot.updateOdometry();
 
-        PIDController distanceController = new PController(0.07);
-        PIDController angleController = new PController(3); // 10
+        double Dp = 0.07;
+        double ACp = 2.3;
 
         double xError = targetX - robot.pos.x;
         double yError = targetY - robot.pos.y;
         double theta = Math.atan2(yError,xError);
 
-        double distance = robot.pos.getDistanceFrom(new Point(targetX, targetY));
+        double distance = Math.sqrt(Math.pow(xError, 2) + Math.pow(yError, 2));
 
-        if (distance > error) {
-            robot.updateOdometry();
-            f = distanceController.calculate(distance,0);
-            t = angleController.calculate(robot.pos.getHeading(), theta);
-        } else {
-            robot.updateOdometry();
-            f = 0;
-            t = angleController.calculate(robot.pos.getHeading(), theta);
-        }
+        f = 0 - distance * Dp;  // Could be -distance but Zero is there to model proper P-Loop
+        t = AngleUtil.angleWrap(theta - robot.pos.getHeading()) * ACp;
 
         double left = f + t;
         double right = f - t;
@@ -74,33 +72,35 @@ public class DriveTrain {
         setMotorPowers(left, right);
     }
 
-    boolean init = false;
-
-    Point startPos = new Point(0, 0);
-    double lolTheta = 0;
-
-    public void diffyLolPogger(Point end) {
+    public void setDifMotorReverse(double targetX, double targetY) {
         robot.updateOdometry();
 
-        double tP = 0.1, fP = 1;
+        double Dp = 0.07;
+        double ACp = 2.3;
 
-        if(!init) {
-            startPos = robot.pos.toPoint();
-            lolTheta = startPos.atan2();
+        double xError = targetX - robot.pos.x;
+        double yError = targetY - robot.pos.y;
+        double theta = Math.atan2(-yError,-xError);
 
-            init = true;
+        double distance = Math.sqrt(Math.pow(xError, 2) + Math.pow(yError, 2));
+
+        f = 0 - distance * Dp;  // Could be -distance but Zero is there to model proper P-Loop
+        t = AngleUtil.angleWrap(theta - robot.pos.getHeading()) * ACp;
+
+        double left = -f + t;
+        double right = -f - t;
+
+        setMotorPowers(left, right);
+    }
+
+    public void differentialRunToPosition(DIRECTION direction, Point pos) {
+        switch (direction) {
+            case FORWARD:
+                setDifMotorForward(pos.x, pos.y);
+                break;
+            case BACKWARD:
+                setDifMotorReverse(pos.x, pos.y);
         }
-
-        double r = robot.pos.getDistanceFrom(end);
-        double e = lolTheta - robot.pos.getHeading();
-
-        double left = r*fP + e*tP;
-        double right = -r*fP - e*tP;
-
-        setMotorPowers(
-                -left,
-                -right
-                );
     }
 
     public void driveFieldCentric(double x, double y, double turn) {

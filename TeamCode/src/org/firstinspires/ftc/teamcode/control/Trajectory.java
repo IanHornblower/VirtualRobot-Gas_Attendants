@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.control;
 
 import org.firstinspires.ftc.teamcode.PurePursuit.PurePursuit;
+import org.firstinspires.ftc.teamcode.hardware.DriveTrain;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.math.Point;
 import org.firstinspires.ftc.teamcode.math.Pose2D;
@@ -151,6 +152,7 @@ public class Trajectory {
                 double tangent = Math.atan2(dyPer, dxPer);
 
                 do {
+                    robot.updateOdometry();
                     Point pointToFollow = PurePursuit.getLookAheadPoint(extendedPath, robot, radius);
 
                     double x = pointToFollow.getX(), y = pointToFollow.getY();
@@ -158,10 +160,10 @@ public class Trajectory {
                     double theta = Math.atan2(dy, dx);
                     distance = robot.pos.getDistanceFrom(path.get(path.size() - 1));
                     //motionProfile.runToPosition(x, y, theta);
-                    robot.DriveTrain.setDifMotor(x, y, allowableDistanceError);
+                    robot.DriveTrain.differentialRunToPosition(DriveTrain.DIRECTION.BACKWARD, pointToFollow);
 
                 } while(distance > allowableDistanceError+radius);
-                motionProfile.rotateSync(tangent, Math.toRadians(allowableDistanceError));
+                //motionProfile.rotateSync(tangent, Math.toRadians(allowableDistanceError));
                 break;
             default:
                 // Wrong Path Type - Try either Pure Pursuit Path types
