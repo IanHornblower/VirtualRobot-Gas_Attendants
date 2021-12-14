@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import org.firstinspires.ftc.teamcode.ControlLoops.PController;
-import org.firstinspires.ftc.teamcode.ControlLoops.PIDController;
 import org.firstinspires.ftc.teamcode.math.Angle;
 import org.firstinspires.ftc.teamcode.math.Curve;
 import org.firstinspires.ftc.teamcode.math.Point;
@@ -16,8 +14,6 @@ import java.util.Currency;
 
 public class DriveTrain {
     private final double maximumMotorSpeed = 0.85;
-
-    public enum DIRECTION {FORWARD, BACKWARD};
 
     private double p = 0, i = 0, d = 0, f = 0;
 
@@ -47,60 +43,6 @@ public class DriveTrain {
 
 
         setMotorPowers(controlPointX, controlPointY, controlPointTurn);
-    }
-
-    double t = 0;
-
-    public void setDifMotorForward(double targetX, double targetY) {
-        robot.updateOdometry();
-
-        double Dp = 0.07;
-        double ACp = 2.3;
-
-        double xError = targetX - robot.pos.x;
-        double yError = targetY - robot.pos.y;
-        double theta = Math.atan2(yError,xError);
-
-        double distance = Math.sqrt(Math.pow(xError, 2) + Math.pow(yError, 2));
-
-        f = 0 - distance * Dp;  // Could be -distance but Zero is there to model proper P-Loop
-        t = AngleUtil.angleWrap(theta - robot.pos.getHeading()) * ACp;
-
-        double left = f + t;
-        double right = f - t;
-
-        setMotorPowers(left, right);
-    }
-
-    public void setDifMotorReverse(double targetX, double targetY) {
-        robot.updateOdometry();
-
-        double Dp = 0.07;
-        double ACp = 2.3;
-
-        double xError = targetX - robot.pos.x;
-        double yError = targetY - robot.pos.y;
-        double theta = Math.atan2(-yError,-xError);
-
-        double distance = Math.sqrt(Math.pow(xError, 2) + Math.pow(yError, 2));
-
-        f = 0 - distance * Dp;  // Could be -distance but Zero is there to model proper P-Loop
-        t = AngleUtil.angleWrap(theta - robot.pos.getHeading()) * ACp;
-
-        double left = -f + t;
-        double right = -f - t;
-
-        setMotorPowers(left, right);
-    }
-
-    public void differentialRunToPosition(DIRECTION direction, Point pos) {
-        switch (direction) {
-            case FORWARD:
-                setDifMotorForward(pos.x, pos.y);
-                break;
-            case BACKWARD:
-                setDifMotorReverse(pos.x, pos.y);
-        }
     }
 
     public void driveFieldCentric(double x, double y, double turn) {

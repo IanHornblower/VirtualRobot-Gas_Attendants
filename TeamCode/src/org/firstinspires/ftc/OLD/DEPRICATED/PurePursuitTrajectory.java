@@ -1,7 +1,6 @@
-package org.firstinspires.ftc.teamcode.PurePursuit;
+/**
+package org.firstinspires.ftc.teamcode.DEPRICATED;
 
-import jdk.nashorn.internal.runtime.arrays.ArrayLikeIterator;
-import org.firstinspires.ftc.teamcode.control.CornettCore;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.math.Point;
 import org.firstinspires.ftc.teamcode.math.Pose2D;
@@ -9,11 +8,8 @@ import org.firstinspires.ftc.teamcode.util.Array;
 import org.firstinspires.ftc.teamcode.util.MiniPID;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ListIterator;
 
-import static org.firstinspires.ftc.teamcode.PurePursuit.PurePursuit.*;
+import static org.firstinspires.ftc.teamcode.DEPRICATED.PurePursuit.*;
 
 public class PurePursuitTrajectory {
 
@@ -222,3 +218,4 @@ public class PurePursuitTrajectory {
         }
     }
 }
+ */

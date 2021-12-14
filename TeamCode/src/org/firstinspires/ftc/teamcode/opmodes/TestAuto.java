@@ -3,21 +3,14 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import org.firstinspires.ftc.teamcode.PurePursuit.PurePursuitTrajectory;
-import org.firstinspires.ftc.teamcode.PurePursuit.Waypoint;
 import org.firstinspires.ftc.teamcode.control.CornettCore;
 import org.firstinspires.ftc.teamcode.control.Trajectory;
+import org.firstinspires.ftc.teamcode.hardware.DriveTrain;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
-import org.firstinspires.ftc.teamcode.math.Point;
 import org.firstinspires.ftc.teamcode.math.Pose2D;
 import org.firstinspires.ftc.teamcode.telemetry.AutoConfig;
 import org.firstinspires.ftc.teamcode.util.AngleUtil;
-import org.firstinspires.ftc.teamcode.util.Controller;
-import static org.firstinspires.ftc.teamcode.util.Controller.*;
-import static org.firstinspires.ftc.teamcode.util.MathUtil.roundPlaces;
 
-import org.firstinspires.ftc.teamcode.util.MathUtil;
 import java.util.concurrent.Future;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,7 +24,7 @@ public class TestAuto extends LinearOpMode {
 
     public Future<Boolean> followPath(Trajectory path) {
         return executor.submit(() -> {
-            path.followPath(Trajectory.PATH_TYPE.DIFFERENTIAL_PURE_PURSUIT, 5, 1);
+            path.followPath(Trajectory.PATH_TYPE.PURE_PURSUIT, CornettCore.DIRECTION.FORWARD, 1);
             return true;
         });
     }
@@ -93,7 +86,7 @@ public class TestAuto extends LinearOpMode {
 
             //ppTraj.followTrajectory(12, 1);
 
-            path1.followPath(Trajectory.PATH_TYPE.BASIC, 12, 1, 0.5);
+            //path1.followPath(Trajectory.PATH_TYPE.BASIC, 12, 1, 0.5);
 
             //path1.testNewPP(12);
 

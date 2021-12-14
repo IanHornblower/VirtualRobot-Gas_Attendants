@@ -1,4 +1,5 @@
-package org.firstinspires.ftc.teamcode.PurePursuit;
+/**
+package org.firstinspires.ftc.teamcode.DEPRICATED;
 
 import org.firstinspires.ftc.teamcode.math.Point;
 
@@ -70,3 +71,4 @@ public class Waypoint {
     }
 
 }
+ */

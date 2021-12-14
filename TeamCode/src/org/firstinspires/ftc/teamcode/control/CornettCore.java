@@ -12,6 +12,8 @@ public class CornettCore extends OpMode {
 
     private Robot robot;
 
+    public enum DIRECTION {FORWARD, BACKWARD};
+
     MiniPID defaultTurnPID = new MiniPID(2, 0, 0);
 
     double defaultTurnOutputMultiplier = 1;
@@ -28,6 +30,9 @@ public class CornettCore extends OpMode {
     boolean init = false;
     double distance = 0;
     double angleDistance = 0;
+
+    public static double Dp = 0.07;
+    public static double ACp = 10;
 
     public double output = 0, direction = 0, turnPIDOutput = 0;
 
@@ -148,6 +153,57 @@ public class CornettCore extends OpMode {
                     x, y, heading, allowableDistanceError,
                     defaultXPID, defaultYPID, defaultHeadingPID,
                     defaultXControlPointMultiplier, defaultYControlPointMultiplier, defaultHeadingControlPointMultiplier);
+    }
+
+    double t = 0, f = 0;
+
+    public void setDifMotorForward(double targetX, double targetY) {
+        robot.updateOdometry();
+
+        double Dp = 0.07;
+        double ACp = 2.3;
+
+        double xError = targetX - robot.pos.x;
+        double yError = targetY - robot.pos.y;
+        double theta = Math.atan2(yError,xError);
+
+        double distance = Math.sqrt(Math.pow(xError, 2) + Math.pow(yError, 2));
+
+        f = 0 - distance * Dp;  // Could be -distance but Zero is there to model proper P-Loop
+        t = AngleUtil.angleWrap(theta - robot.pos.getHeading()) * ACp;
+
+        double left = f + t;
+        double right = f - t;
+
+        robot.DriveTrain.setMotorPowers(left, right);
+    }
+
+    public void setDifMotorReverse(double targetX, double targetY) {
+        robot.updateOdometry();
+
+        double xError = targetX - robot.pos.x;
+        double yError = targetY - robot.pos.y;
+        double theta = Math.atan2(-yError,-xError);
+
+        double distance = Math.sqrt(Math.pow(xError, 2) + Math.pow(yError, 2));
+
+        f = 0 - distance * Dp;  // Could be -distance but Zero is there to model proper P-Loop
+        t = AngleUtil.angleWrap(theta - robot.pos.getHeading()) * ACp;
+
+        double left = -f + t;
+        double right = -f - t;
+
+        robot.DriveTrain.setMotorPowers(left, right);
+    }
+
+    public void differentialRunToPosition(DIRECTION direction, Point pos) {
+        switch (direction) {
+            case FORWARD:
+                setDifMotorForward(pos.x, pos.y);
+                break;
+            case BACKWARD:
+                setDifMotorReverse(pos.x, pos.y);
+        }
     }
 
     @Override

@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.math;
 
-import org.firstinspires.ftc.teamcode.PurePursuit.Waypoint;
-import org.firstinspires.ftc.teamcode.hardware.DriveTrain;
-import org.firstinspires.ftc.teamcode.hardware.Robot;
-
 import static org.firstinspires.ftc.teamcode.util.MathUtil.roundPlaces;
 
 public class Point {
