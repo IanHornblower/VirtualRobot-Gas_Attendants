@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.PurePursuit;
+package org.firstinspires.ftc.teamcode.control;
 
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.math.Point;
@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.math.Pose2D;
 
 import java.util.ArrayList;
 
-public class PurePursuitUtil {
+public class PurePursuit {
 
     public static Point getLookAheadPoint(ArrayList<Pose2D> path, Robot robot, double radius) {
         Point pointToFollow = path.get(0).toPoint();

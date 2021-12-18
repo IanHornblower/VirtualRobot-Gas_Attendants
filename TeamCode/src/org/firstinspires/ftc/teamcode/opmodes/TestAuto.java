@@ -19,12 +19,13 @@ import java.util.concurrent.Executors;
 @Autonomous(name = "Testing Auto", group = "Testing")
 public class TestAuto extends LinearOpMode {
 
+
     private ExecutorService executor
             = Executors.newSingleThreadExecutor();
 
     public Future<Boolean> followPath(Trajectory path) {
         return executor.submit(() -> {
-            path.followPath(Trajectory.PATH_TYPE.PURE_PURSUIT, CornettCore.DIRECTION.FORWARD, 1);
+            path.followPath(Trajectory.PATH_TYPE.BASIC, 1);
             return true;
         });
     }

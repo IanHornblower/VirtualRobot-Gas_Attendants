@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.control;
 
-import org.firstinspires.ftc.teamcode.PurePursuit.PurePursuitUtil;
-import org.firstinspires.ftc.teamcode.hardware.DriveTrain;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.math.Point;
 import org.firstinspires.ftc.teamcode.math.Pose2D;
 import org.firstinspires.ftc.teamcode.util.AngleUtil;
 import org.firstinspires.ftc.teamcode.util.Array;
 
-import java.awt.event.ItemListener;
 import java.util.ArrayList;
 
 public class Trajectory {
@@ -29,16 +26,44 @@ public class Trajectory {
         path.add(startPos);
     }
 
-    public Trajectory (Robot robot, ArrayList<Pose2D> path) {
+    public Trajectory (Robot robot, ArrayList<Point> path, double angle) {
         this.motionProfile = new CornettCore(robot);
-        this.path = path;
+        this.path = toPoseArray(path, angle);
         this.robot = robot;
     }
 
+    /*
+        public Trajectory (Robot robot, ArrayList<Pose2D> path) {
+        this.motionProfile = new CornettCore(robot);
+        this.path = path;
+        this.robot = robot;
+        }
+     */
+
     public enum PATH_TYPE {BASIC, PURE_PURSUIT}
 
-    public ArrayList<Pose2D> get() {
+    public ArrayList<Pose2D> getPoseArray() {
         return path;
+    }
+
+    public ArrayList<Point> getPointArray() {
+        ArrayList<Point> pointPath = new ArrayList<>();
+
+        for(Pose2D point : path) {
+            pointPath.add(point.toPoint());
+        }
+
+        return pointPath;
+    };
+
+    public ArrayList<Pose2D> toPoseArray(ArrayList<Point> path, double angle) {
+        ArrayList<Pose2D> posePath = new ArrayList<>();
+
+        for(Point pose : path) {
+            posePath.add(new Pose2D(pose.x, pose.y, angle));
+        }
+
+        return posePath;
     }
 
     public Pose2D end() {
@@ -61,8 +86,8 @@ public class Trajectory {
                 robot, this.end()
         );
 
-        for(int i = 0; i < rev.size(); i++) {
-            traj.addWaypoint(rev.get(i));
+        for (Pose2D pose2D : rev) {
+            traj.addWaypoint(pose2D);
         }
 
         return traj;
@@ -150,27 +175,27 @@ public class Trajectory {
         }
     }
 
-    public void followPath(PATH_TYPE type, CornettCore.DIRECTION direction, double error) throws InterruptedException {
+    public void followPath(PATH_TYPE type, double error) throws InterruptedException {
         switch (type) {
             case BASIC:
                 double pathLength = path.size();
                 for(int i = 0; i < pathLength; i++) {
                     motionProfile.runToPositionSync(path.get(i).getX(), path.get(i).getY(), path.get(i).getHeading(), error);
                 }
-                break;
+                robot.DriveTrain.stopDrive();
         }
     }
 
     public void followPath(PATH_TYPE pathType, CornettCore.DIRECTION direction, double radius, double error) throws InterruptedException {
         switch (pathType) {
             case PURE_PURSUIT:
-                ArrayList<Pose2D> extendedPath = PurePursuitUtil.extendPath(path, radius);
+                ArrayList<Pose2D> extendedPath = PurePursuit.extendPath(path, radius);
 
                 double distance = robot.pos.getDistanceFrom(path.get(path.size() - 1));
 
                 do {
                     robot.updateOdometry();
-                    Point pointToFollow = PurePursuitUtil.getLookAheadPoint(extendedPath, robot, radius);
+                    Point pointToFollow = PurePursuit.getLookAheadPoint(extendedPath, robot, radius);
 
                     distance = robot.pos.getDistanceFrom(path.get(path.size() - 1));
                     motionProfile.differentialRunToPosition(direction, pointToFollow);
