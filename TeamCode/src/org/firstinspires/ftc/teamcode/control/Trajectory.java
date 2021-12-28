@@ -175,7 +175,7 @@ public class Trajectory {
         }
     }
 
-    public void followPath(PATH_TYPE type, double error) throws InterruptedException {
+    public Trajectory followPath(PATH_TYPE type, double error) throws InterruptedException {
         switch (type) {
             case BASIC:
                 double pathLength = path.size();
@@ -184,9 +184,10 @@ public class Trajectory {
                 }
                 robot.DriveTrain.stopDrive();
         }
+        return this;
     }
 
-    public void followPath(PATH_TYPE pathType, CornettCore.DIRECTION direction, double radius, double error) throws InterruptedException {
+    public Trajectory followPath(PATH_TYPE pathType, CornettCore.DIRECTION direction, double radius, double error) throws InterruptedException {
         switch (pathType) {
             case PURE_PURSUIT:
                 ArrayList<Pose2D> extendedPath = PurePursuit.extendPath(path, radius);
@@ -207,5 +208,6 @@ public class Trajectory {
                 } while(distance > error+radius);
                 robot.DriveTrain.stopDrive();
         }
+        return this;
     }
 }

@@ -48,14 +48,6 @@ public class TestAuto extends LinearOpMode {
                 {"Parking", "Warehouse", "Storage"},
         };
 
-        AutoConfig autoTele = new AutoConfig(telemetry, config);
-
-
-
-
-
-
-
         waitForStart();
 
         CornettCore motionProfile = new CornettCore(robot);
