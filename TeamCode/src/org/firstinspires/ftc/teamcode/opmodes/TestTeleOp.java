@@ -9,7 +9,6 @@ import org.firstinspires.ftc.teamcode.util.AngleUtil;
 import org.firstinspires.ftc.teamcode.util.Controller;
 import static org.firstinspires.ftc.teamcode.util.Controller.*;
 
-@Disabled
 @TeleOp(name = "Testing OpMode", group = "Testing")
 public class TestTeleOp extends LinearOpMode {
 
@@ -26,8 +25,7 @@ public class TestTeleOp extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()) {
-            robot.updateOdometry();
-            robot.updateVelocity();
+            //robot.updateOdometry();
             robot.updateEncoderVelocity();
             robot.updateAcumulatedHeading();
 
@@ -38,8 +36,7 @@ public class TestTeleOp extends LinearOpMode {
             robot.DriveTrain.driveFieldCentric(leftX, leftY, turn);
 
             telemetry.addData("XYH", robot.pos.toString());
-            telemetry.addData("left Velo", robot.leftVelocity);
-            telemetry.addData("right Velo", robot.rightVelocity);
+            telemetry.addData("Distance", robot.accumulatedDistance);
             telemetry.update();
         }
     }

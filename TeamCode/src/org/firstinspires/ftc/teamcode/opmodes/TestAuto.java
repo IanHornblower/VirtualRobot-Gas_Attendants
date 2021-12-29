@@ -63,7 +63,6 @@ public class TestAuto extends LinearOpMode {
 
         while(opModeIsActive()) {
             robot.updateOdometry();
-            robot.updateVelocity();
 
             /**
             if(plan.isDone()) {

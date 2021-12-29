@@ -5,6 +5,7 @@ import org.firstinspires.ftc.teamcode.math.Point;
 import org.firstinspires.ftc.teamcode.math.Pose2D;
 import org.firstinspires.ftc.teamcode.util.AngleUtil;
 import org.firstinspires.ftc.teamcode.util.Array;
+import org.w3c.dom.html.HTMLBRElement;
 
 import java.util.ArrayList;
 
@@ -32,15 +33,19 @@ public class Trajectory {
         this.robot = robot;
     }
 
-    /*
-        public Trajectory (Robot robot, ArrayList<Pose2D> path) {
+    public Trajectory (Robot robot, ArrayList<Pose2D> path) {
         this.motionProfile = new CornettCore(robot);
         this.path = path;
         this.robot = robot;
-        }
-     */
+    }
 
     public enum PATH_TYPE {BASIC, PURE_PURSUIT}
+
+    public enum SPACIAL_TYPE {DISTANCE, PERCENTAGE}
+
+    public double getDistance() {
+        return 0;
+    }
 
     public ArrayList<Pose2D> getPoseArray() {
         return path;
@@ -79,18 +84,26 @@ public class Trajectory {
     }
 
     public Trajectory retrace() {
-        ArrayList<Pose2D> rev = Array.reversePose2DArray(path);
-        rev.remove(0);
+        ArrayList<Pose2D> oldPath = path;
 
-        Trajectory traj = new Trajectory(
-                robot, this.end()
-        );
+        path = Array.reversePose2DArray(oldPath);
+        return new Trajectory(robot, path);
+    }
 
-        for (Pose2D pose2D : rev) {
-            traj.addWaypoint(pose2D);
+    public Trajectory at(ArrayList<Function> list) {
+        for(int i = 0; i < list.size(); i++) {
+            int finalI = i;
+            Thread t1 = new Thread(new Runnable() {
+                public void run() {
+                    while(robot.accumulatedDistance <= list.get(finalI).distance) {
+                        robot.pass();
+                    }
+                    list.get(finalI).execute();
+                }
+            });
+            t1.start();
         }
-
-        return traj;
+        return this;
     }
 
     /**
@@ -200,10 +213,6 @@ public class Trajectory {
 
                     distance = robot.pos.getDistanceFrom(path.get(path.size() - 1));
                     motionProfile.differentialRunToPosition(direction, pointToFollow);
-
-
-                    robot.telemetry.addData("dist", distance);
-                    robot.telemetry.update();
 
                 } while(distance > error+radius);
                 robot.DriveTrain.stopDrive();

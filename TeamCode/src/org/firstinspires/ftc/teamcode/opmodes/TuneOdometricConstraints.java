@@ -37,13 +37,11 @@ public class TuneOdometricConstraints extends LinearOpMode {
 
         while(opModeIsActive()) {
             robot.updateOdometry();
-            robot.updateVelocity();
             robot.updateAcumulatedHeading();
 
             CornettCore motionProfile = new CornettCore(robot);
 
             robot.updateOdometry();
-            robot.updateVelocity();
             robot.updateAcumulatedHeading();
 
             motionProfile.tuneTrackWidthIMU(Math.toRadians(720), 1);

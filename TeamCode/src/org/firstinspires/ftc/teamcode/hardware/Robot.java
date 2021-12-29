@@ -8,7 +8,10 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import javafx.geometry.Pos;
+import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.math.Point;
 import org.firstinspires.ftc.teamcode.math.Pose2D;
 import org.firstinspires.ftc.teamcode.util.AngleUtil;
 
@@ -21,6 +24,7 @@ public class Robot extends OpMode {
     private Orientation angles;
 
     private double previousHeading;
+    private Pose2D previousPosition = new Pose2D(0, 0, 0);
 
     public HardwareMap hwMap;
     public DriveTrain DriveTrain;
@@ -42,7 +46,7 @@ public class Robot extends OpMode {
 
     // Velocity
 
-    int cycleToSkip = 20;
+    int cycleToSkip = 1;
 
     public Robot(HardwareMap hardwareMap) {
         hwMap = hardwareMap;
@@ -158,10 +162,14 @@ public class Robot extends OpMode {
     private int oldLateralPosition = 0;
 
     public double accumulatedHeading = 0;
+    public double accumulatedDistance = 0;
 
     public double leftVelocity = 0;
     public double rightVelocity = 0;
     public double lateralVelocity = 0;
+
+    public double dxTraveled = 0;
+    public double dyTraveled = 0;
 
     public Pose2D START_POSITION = new Pose2D(0, 0, AngleUtil.interpretAngle(90));  // Default
 
@@ -171,6 +179,13 @@ public class Robot extends OpMode {
     }
 
     public Pose2D pos = START_POSITION;
+
+    int i = 0;
+
+    public void pass() {
+        System.out.print(accumulatedDistance);
+    }
+
 
     public void updateAcumulatedHeading() {
         double currentHeading = Math.toDegrees(pos.getHeading());
@@ -198,7 +213,7 @@ public class Robot extends OpMode {
         int dnLateral = currentLateralPosition - oldLateralPosition;
 
         double dtheta = (dnLeft - dnRight) / L;
-        double dx = (dnLeft+dnRight) / 2.0;
+        double dx = (dnLeft + dnRight) / 2.0;
         double dy = dnLateral - lateralOffset * dtheta;
 
         dtheta *= inchPerTick;
@@ -209,6 +224,8 @@ public class Robot extends OpMode {
         double dxTraveled = dx * Math.cos(pos.heading) - dy * Math.sin(pos.heading);
         double dyTraveled = dx * Math.sin(pos.heading) + dy * Math.cos(pos.heading);
 
+        accumulatedDistance += Math.hypot(dxTraveled, dyTraveled);
+
         pos.x -= dxTraveled;  // Inverted cuz it was negative? :)
         pos.y += dyTraveled;
         pos.heading += dtheta;
@@ -216,49 +233,8 @@ public class Robot extends OpMode {
         oldRightPosition = currentRightPosition;
         oldLeftPosition = currentLeftPosition;
         oldLateralPosition = currentLateralPosition;
-
-        //telemetry.addData("XYH", pos.toString());
-        //telemetry.update();
     }
 
-    double oldX = 0;
-    double oldY = 0;
-    double oldH = 0;
-    double oldTime = 0;
-
-    double currentX = 0;
-    double currentY = 0;
-    double currentH = 0;
-    double currentTime = 0;
-
-    public double dx = 0;
-    public double dy = 0;
-    public double dt = 0;
-    public double dTheta = 0;
-    int i = 0;
-
-    public void updateVelocity() { // make update() --> odometry() if need be [Merge With UpdateOdometry()]
-        i++; if(i % cycleToSkip == 0) {
-                oldX = currentX;
-                oldY = currentY;
-                oldH = currentH;
-                oldTime = currentTime;
-
-                currentX = pos.x;
-                currentY = pos.y;
-                currentH = pos.getHeading();
-                currentTime = System.nanoTime()/1e+9;
-
-                dx = currentX - oldX;
-                dy = currentY - oldY;
-                dTheta = currentH - oldH;
-                dt = currentTime - oldTime;
-
-                pos.xVelocity = dx/dt;
-                pos.yVelocity = dy/dt;
-                pos.headingVelocity = dTheta/dt;
-        }
-    }
     public void updateEncoderVelocity() {
         leftVelocity = leftEncoder.getVelocity()*inchPerTick;
         rightVelocity = rightEncoder.getVelocity()*inchPerTick;
