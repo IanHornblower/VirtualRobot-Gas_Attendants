@@ -93,13 +93,11 @@ public class Trajectory {
     public Trajectory at(ArrayList<Function> list) {
         for(int i = 0; i < list.size(); i++) {
             int finalI = i;
-            Thread t1 = new Thread(new Runnable() {
-                public void run() {
+            Thread t1 = new Thread(() -> {
                     while(robot.accumulatedDistance <= list.get(finalI).distance) {
                         robot.pass();
                     }
                     list.get(finalI).execute();
-                }
             });
             t1.start();
         }

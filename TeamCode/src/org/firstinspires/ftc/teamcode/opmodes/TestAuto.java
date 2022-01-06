@@ -15,7 +15,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Disabled
 @Autonomous(name = "Testing Auto", group = "Testing")
 public class TestAuto extends LinearOpMode {
 
@@ -52,7 +51,7 @@ public class TestAuto extends LinearOpMode {
 
         CornettCore motionProfile = new CornettCore(robot);
 
-        Future<Boolean> plan = this.followPath(path1);
+        //Future<Boolean> plan = this.followPath(path1);
 
         //PurePursuitTrajectory ppTraj = new PurePursuitTrajectory(robot, robot.START_POSITION, 20, 2);
 
@@ -62,27 +61,10 @@ public class TestAuto extends LinearOpMode {
         //ppTraj.buildTrajectory();
 
         while(opModeIsActive()) {
-            robot.updateOdometry();
 
-            /**
-            if(plan.isDone()) {
-                telemetry.addData("Static XYH", new Pose2D(20, 60, 0).toString());
-                telemetry.addData("XYH", robot.pos.toString());
-                telemetry.update();
-                stop();
-            }
-             */
+            motionProfile.runToPosition(12, 12, Math.toRadians(90));
 
 
-            //robot.DriveTrain.setDifMotor(24, 24, 0.1);
-
-            //ppTraj.followTrajectory(12, 1);
-
-            //path1.followPath(Trajectory.PATH_TYPE.BASIC, 12, 1, 0.5);
-
-            //path1.testNewPP(12);
-
-           //stop();
         }
     }
 }

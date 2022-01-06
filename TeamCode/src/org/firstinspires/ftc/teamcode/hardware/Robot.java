@@ -43,11 +43,6 @@ public class Robot extends OpMode {
 
     public final static double TRACKWIDTH = 15;
 
-
-    // Velocity
-
-    int cycleToSkip = 1;
-
     public Robot(HardwareMap hardwareMap) {
         hwMap = hardwareMap;
 

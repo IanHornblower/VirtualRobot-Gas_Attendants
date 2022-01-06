@@ -26,13 +26,13 @@ public class CornettCore extends OpMode {
     double defaultYControlPointMultiplier = 1;
     double defaultHeadingControlPointMultiplier = 1;
 
+    public static double Dp = 0.07;
+    public static double ACp = 10;
+
     private double zero = 1e-9;
     boolean init = false;
     double distance = 0;
     double angleDistance = 0;
-
-    public static double Dp = 0.07;
-    public static double ACp = 10;
 
     public double output = 0, direction = 0, turnPIDOutput = 0;
 
@@ -41,9 +41,6 @@ public class CornettCore extends OpMode {
     public CornettCore(Robot robot) {
         this.robot = robot;
     }
-
-    // TODO: Set up Trajectory Following, simple path following (circle around target), Later Implement Pure Pursuit (Circle Around Robot)
-    // TODO: When running Sync functions allow for heading to finish turning (Maybe not, not an issue right now)
 
     public void tuneTrackWidthIMU (double heading, double direction) {
         robot.updateAcumulatedHeading();

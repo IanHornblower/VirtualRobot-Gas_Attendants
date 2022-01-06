@@ -23,7 +23,9 @@ public class MotionProfileAuto extends LinearOpMode {
 
         Trajectory joe  = new Trajectory(robot, robot.START_POSITION);
 
-        joe.addWaypoint(new Point(0, 48));
+        joe.addWaypoint(new Point(0, 24));
+        joe.addWaypoint(new Point(24, 36));
+        joe.addWaypoint(new Point(24, 48));
 
         waitForStart();
 
@@ -31,10 +33,16 @@ public class MotionProfileAuto extends LinearOpMode {
 
         while(opModeIsActive()) {
             robot.updateOdometry();
+
             ArrayList<Function> list = new ArrayList<>();
 
             list.add(new Function(12, () -> {
                 telemetry.addLine("AT 12: \t" + robot.accumulatedDistance);
+                telemetry.update();
+            }));
+
+            list.add(new Function(24,() -> {
+                telemetry.addLine("do");
                 telemetry.update();
             }));
 
